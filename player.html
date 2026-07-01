@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>CRICINSIDER – FANCODE WEB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/shaka-player.ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/controls.min.css">
+    <link rel="stylesheet" href="player.css">
+</head>
+<body>
+    <header class="player-header">
+        <div class="player-header-inner">
+            <a href="index.html" class="player-brand gradient-text">
+                CRICINSIDER
+            </a>
+            <a href="https://telegram.me/+tL4jz_00y6NlMGRl" target="_blank" rel="noopener noreferrer" class="btn-telegram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                <span>JOIN TELEGRAM</span>
+            </a>
+        </div>
+    </header>
+    <main class="player-container">
+        <div class="match-header-info">
+            <div class="match-titles">
+                <div class="title-row">
+                    <span class="live-indicator">LIVE</span>
+                    <h1 id="matchName">LOADING MATCH...</h1>
+                </div>
+                <h2 id="matchTitle">PLEASE WAIT</h2>
+            </div>
+            <div class="match-badges">
+                <div class="badge-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                    ANDROID
+                </div>
+                <div class="badge-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+                        <path d="M9 2h6v2H9z"></path>
+                    </svg>
+                    IOS
+                </div>
+                <div class="badge-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    DESKTOP
+                </div>
+                <div class="badge-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                        <polyline points="17 2 12 7 7 2"></polyline>
+                    </svg>
+                    SMART TV
+                </div>
+            </div>
+        </div>
+        <div class="video-wrapper shaka-video-container" id="videoContainer">
+            <video id="videoPlayer" playsinline autoplay muted style="width: 100%; height: 100%; background-color: transparent !important;"></video>
+        </div>
+        <div id="serverList" class="server-list">
+        </div>
+    </main>
+    <footer class="player-footer">
+        <p>2026 CRICINSIDER • ALL RIGHTS RESERVED</p>
+    </footer>
+    <script src="player.js"></script>
+</body>
+</html>
