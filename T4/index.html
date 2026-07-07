@@ -244,7 +244,7 @@ async function fetchEvents() {
             const isUpcoming = event.status === "UPCOMING";
 
             const videoLink = event.dai_url
-                ? `https://p.apeiria.net/~insiderlive.html?videoUrl=${encodeURIComponent(event.dai_url)}`
+                ? `http://hindi-smoky.vercel.app/?url=${encodeURIComponent(event.dai_url)}`
                 : "#";
 
             eventDiv.innerHTML = `
