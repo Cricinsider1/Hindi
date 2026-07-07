@@ -1,204 +1,1454 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="referrer" content="no-referrer">
-<title>TG_@Cricinsider365</title>
+<!DOCTYPE html><html lang="en" data-fp="6i72b7kcduf"><head>
 
-<!-- Plyr + HLS.js -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+
+<meta name="referrer" content="no-referrer">
+
+<title>Live Player</title>
+
+
+<!-- PLYR CSS -->
+
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+
+
+<!-- PLYR JS -->
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script><style type="text/css">* {user-select: auto !important; -webkit-user-select: auto !important;}</style><input type="hidden" id="inject_idm_text_selection">
+
+
+<!-- HLS JS -->
+
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
+
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: black;
-  font-family: sans-serif;
+
+*{
+box-sizing:border-box;
 }
 
-#player-container {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
+html,
+body{
+margin:0;
+padding:0;
+width:100%;
+min-height:100%;
 }
 
-#plyr-player {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: black;
+body{
+
+background:
+radial-gradient(circle at top,#1c2333 0,#0d1117 45%,#05070a 100%);
+
+font-family:
+Poppins,
+Arial,
+sans-serif;
+
+color:#fff;
+
+text-align:center;
+
+min-height:100vh;
+
 }
 
-#telegramButton {
-  display: block;
-  width: 220px;
-  margin: 15px auto;
-  padding: 12px 20px;
-  background: #0088cc;
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  transition: background 0.3s, transform 0.2s;
+
+/* MAIN PAGE */
+
+.page{
+
+width:100%;
+
+min-height:100vh;
+
+padding:
+
+env(safe-area-inset-top)
+
+0
+
+env(safe-area-inset-bottom);
+
 }
 
-#telegramButton:hover {
-  background: #00a2e8;
-  transform: scale(1.05);
+
+/* COUNTER */
+
+.counter-area{
+
+padding:10px 5px 4px;
+
+min-height:35px;
+
 }
 
-#popup-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0,0,0,0.7);
-  z-index: 9999;
+
+/* AD */
+
+.ad{
+
+width:320px;
+
+height:50px;
+
+max-width:100%;
+
+margin:12px auto;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+overflow:hidden;
+
 }
 
-.modal {
-  background: #1e1e1e;
-  padding: 25px 30px;
-  border-radius: 12px;
-  text-align: center;
-  color: #fff;
-  max-width: 300px;
-  width: 90%;
-  box-shadow: 0 0 20px rgba(0, 136, 204, 0.5);
-  animation: fadeIn 0.3s ease;
+
+/* PLAYER WRAPPER */
+
+.player-wrapper{
+
+width:94%;
+
+max-width:1100px;
+
+margin:12px auto;
+
+position:relative;
+
+border-radius:16px;
+
+overflow:hidden;
+
+background:#000;
+
+box-shadow:
+
+0 10px 40px rgba(0,0,0,.65),
+
+0 0 0 1px rgba(255,255,255,.08);
+
 }
 
-.modal h2 {
-  margin-top: 0;
-  color: #0088cc;
+
+/* VIDEO */
+
+video{
+
+display:block;
+
+width:100%;
+
+aspect-ratio:16/9;
+
+background:#000;
+
 }
 
-.modal button {
-  margin: 10px 5px 0;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
+
+/* PLYR */
+
+.plyr{
+
+width:100%;
+
+--plyr-color-main:#ff1744;
+
+--plyr-video-background:#000;
+
+--plyr-menu-background:rgba(15,15,18,.96);
+
+--plyr-menu-color:#fff;
+
+--plyr-control-radius:8px;
+
 }
 
-#joinButton {
-  background: #0088cc;
-  color: #fff;
+
+/* LOADING SCREEN */
+
+.loading-overlay{
+
+position:absolute;
+
+inset:0;
+
+z-index:20;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+background:
+
+radial-gradient(circle,#151a22,#050608);
+
+transition:
+
+opacity .25s ease,
+
+visibility .25s ease;
+
 }
 
-#joinButton:hover {
-  background: #00a2e8;
+.loading-overlay.hidden{
+
+opacity:0;
+
+visibility:hidden;
+
+pointer-events:none;
+
 }
 
-#closeButton {
-  background: #444;
-  color: #fff;
+
+/* SPINNER */
+
+.loader{
+
+width:52px;
+
+height:52px;
+
+border:4px solid rgba(255,255,255,.18);
+
+border-top-color:#ff1744;
+
+border-radius:50%;
+
+animation:spin .8s linear infinite;
+
 }
 
-@keyframes fadeIn {
-  from {opacity: 0; transform: scale(0.95);}
-  to {opacity: 1; transform: scale(1);}
+@keyframes spin{
+
+to{
+transform:rotate(360deg);
 }
+
+}
+
+
+/* ERROR MESSAGE */
+
+.player-message{
+
+position:absolute;
+
+inset:0;
+
+z-index:25;
+
+display:none;
+
+align-items:center;
+
+justify-content:center;
+
+padding:25px;
+
+background:
+
+linear-gradient(
+
+135deg,
+
+rgba(5,7,10,.98),
+
+rgba(20,25,35,.98)
+
+);
+
+}
+
+.player-message.show{
+
+display:flex;
+
+}
+
+.message-box{
+
+max-width:500px;
+
+padding:25px;
+
+border-radius:16px;
+
+background:rgba(255,255,255,.06);
+
+border:1px solid rgba(255,255,255,.12);
+
+box-shadow:0 20px 50px rgba(0,0,0,.5);
+
+}
+
+.message-title{
+
+font-size:22px;
+
+font-weight:700;
+
+margin-bottom:8px;
+
+}
+
+.message-sub{
+
+font-size:14px;
+
+line-height:1.6;
+
+color:#b9c0cc;
+
+}
+
+
+/* SANDBOX BLOCK SCREEN */
+
+.block-overlay{
+
+position:fixed;
+
+inset:0;
+
+z-index:999999999;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding:20px;
+
+background:
+
+radial-gradient(
+
+circle at top,
+
+#202838 0,
+
+#0c1017 45%,
+
+#030405 100%
+
+);
+
+}
+
+.block-box{
+
+width:100%;
+
+max-width:500px;
+
+padding:35px 25px;
+
+border-radius:20px;
+
+background:rgba(255,255,255,.06);
+
+border:1px solid rgba(255,255,255,.12);
+
+box-shadow:
+
+0 25px 70px rgba(0,0,0,.65);
+
+backdrop-filter:blur(12px);
+
+}
+
+.block-icon{
+
+width:70px;
+
+height:70px;
+
+margin:0 auto 18px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:50%;
+
+font-size:32px;
+
+background:rgba(255,23,68,.15);
+
+border:1px solid rgba(255,23,68,.4);
+
+}
+
+.block-title{
+
+font-size:26px;
+
+font-weight:700;
+
+margin-bottom:10px;
+
+}
+
+.block-sub{
+
+font-size:15px;
+
+line-height:1.7;
+
+color:#c4cad3;
+
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.player-wrapper{
+
+width:100%;
+
+margin:8px auto;
+
+border-radius:0;
+
+}
+
+.ad{
+
+margin:10px auto;
+
+}
+
+.block-title{
+
+font-size:22px;
+
+}
+
+}
+
 </style>
-</head>
+
+<style></style></head>
+
 
 <body>
 
-<div id="player-container">
-  <video id="plyr-player" controls playsinline></video>
-  <button id="telegramButton">Join Telegram</button>
-</div>
+<div class="page" id="main-page">
+
+
+<!-- POPUP ADS -->
 
 <script>
-// Get URL param
-function getQueryParam(param) {
-  return new URLSearchParams(window.location.search).get(param);
-}
 
-const videoSrc = getQueryParam('url');
-const video = document.getElementById('plyr-player');
+(function(s){
 
-// Load Video
-if (videoSrc) {
-  if (Hls.isSupported()) {
-    const hls = new Hls();
-    hls.loadSource(videoSrc);
-    hls.attachMedia(video);
+s.dataset.zone = '8467599';
 
-    hls.on(Hls.Events.MANIFEST_PARSED, function () {
-      const availableQualities = hls.levels
-        .map(l => l.height)
-        .filter((v, i, a) => a.indexOf(v) === i)
-        .sort((a, b) => b - a);
+s.src = 'https://al5sm.com/tag.min.js';
 
-      const player = new Plyr(video, {
-        autoplay: true,
-        muted: true,
-        settings: ['quality', 'speed', 'loop'],
-        quality: {
-          default: availableQualities[0],
-          options: availableQualities,
-          forced: true,
-          onChange: (newQuality) => {
-            hls.levels.forEach((level, index) => {
-              if (level.height === newQuality) hls.currentLevel = index;
-            });
-          }
-        }
-      });
+})(
 
-      if (availableQualities.length) hls.currentLevel = hls.levels.length - 1;
-    });
+[document.documentElement,document.body]
 
-  } else {
-    video.src = videoSrc;
-    new Plyr(video, { autoplay: true, muted: true });
-  }
-}
+.filter(Boolean)
 
-// Popup On Load
-window.addEventListener("load", function () {
-  const container = document.createElement('div');
-  container.id = 'popup-container';
-  document.body.appendChild(container);
+.pop()
 
-  const popup = document.createElement('div');
-  popup.className = 'modal';
+.appendChild(document.createElement('script'))
 
-  popup.innerHTML = `
-    <h2>Support Us!</h2>
-    <p>Join our Telegram channel <br><strong>@Cricinsider365</strong></p>
-    <button id="joinButton">Join Now</button>
-    <button id="closeButton">Already Joined</button>
-  `;
+);
 
-  container.appendChild(popup);
-
-  popup.querySelector('#joinButton').onclick = () => {
-    window.open("https://t.me/+IhSW51QysxU3NzY1", "_blank");
-    container.remove();
-  };
-  popup.querySelector('#closeButton').onclick = () => container.remove();
-});
-
-// Telegram button
-document.getElementById('telegramButton').onclick = () => {
-  window.open("https://t.me/+IhSW51QysxU3NzY1", "_blank");
-};
 </script>
 
-</body>
-</html>
+
+
+<!-- COUNTERS -->
+
+<div class="counter-area">
+
+<script src="//widget.supercounters.com/ssl/online_i.js">
+</script>
+
+<script>
+
+if(typeof sc_online_i === "function"){
+
+sc_online_i(
+
+1732494,
+
+"ffffff",
+
+"e61c1c"
+
+);
+
+}
+
+</script>
+
+
+<br>
+
+
+<script src="//widget.supercounters.com/ssl/hit.js">
+</script>
+
+<script>
+
+if(typeof sc_hit === "function"){
+
+sc_hit(
+
+1732495,
+
+0,
+
+5
+
+);
+
+}
+
+</script>
+
+</div>
+
+
+
+<!-- TOP AD -->
+
+<div class="ad">
+
+<script>
+
+atOptions = {
+
+'key':
+
+'a5255771103680eda7c631a7098deafa',
+
+'format':'iframe',
+
+'height':50,
+
+'width':320,
+
+'params':{}
+
+};
+
+</script>
+
+<script src="https://recollectsideway.com/a5255771103680eda7c631a7098deafa/invoke.js">
+</script>
+
+</div>
+
+
+
+<!-- PLAYER -->
+
+<div class="player-wrapper" id="player-container">
+
+
+<video id="player" controls="" playsinline="" webkit-playsinline="" crossorigin="anonymous" preload="metadata"></video>
+
+
+<!-- LOADER -->
+
+<div class="loading-overlay hidden" id="loading-overlay">
+
+<div class="loader"></div>
+
+</div>
+
+
+<!-- PLAYER ERROR -->
+
+<div class="player-message show" id="player-message">
+
+<div class="message-box">
+
+<div class="message-title" id="message-title">No Stream Found</div>
+
+<div class="message-sub" id="message-sub">Please provide a valid stream using the embed URL parameter.</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+
+<!-- BOTTOM AD -->
+
+<div class="ad">
+
+<script>
+
+atOptions = {
+
+'key':
+
+'a5255771103680eda7c631a7098deafa',
+
+'format':'iframe',
+
+'height':50,
+
+'width':320,
+
+'params':{}
+
+};
+
+</script>
+
+<script src="https://recollectsideway.com/a5255771103680eda7c631a7098deafa/invoke.js">
+</script>
+
+</div>
+
+
+
+<!-- NATIVE AD -->
+
+<script async="async" data-cfasync="false" src="https://recollectsideway.com/29880634ec9e229e821a7176ae8af8d8/invoke.js">
+
+</script>
+
+
+<div id="container-29880634ec9e229e821a7176ae8af8d8">
+
+</div>
+
+
+</div><script data-zone="8467599" src="https://al5sm.com/tag.min.js"></script>
+
+
+
+<script>
+
+(function(){
+
+
+/* ==========================
+   ELEMENTS
+========================== */
+
+const video =
+
+document.getElementById("player");
+
+
+const container =
+
+document.getElementById("player-container");
+
+
+const loading =
+
+document.getElementById("loading-overlay");
+
+
+const message =
+
+document.getElementById("player-message");
+
+
+const messageTitle =
+
+document.getElementById("message-title");
+
+
+const messageSub =
+
+document.getElementById("message-sub");
+
+
+let hls = null;
+
+let player = null;
+
+let networkRecovery = 0;
+
+let mediaRecovery = 0;
+
+
+
+/* ==========================
+   SANDBOX DETECTION
+========================== */
+
+function isSandboxedEnv(){
+
+try{
+
+
+/* Normal direct page */
+
+if(window.self === window.top){
+
+return false;
+
+}
+
+
+/* Direct sandbox attribute detection */
+
+try{
+
+const frame = window.frameElement;
+
+if(frame){
+
+const sandbox =
+
+frame.getAttribute("sandbox");
+
+if(sandbox !== null){
+
+return true;
+
+}
+
+}
+
+}catch(e){
+
+/*
+
+Cross-origin frame access blocked.
+
+This alone does not always mean sandbox,
+
+so continue with further checks.
+
+*/
+
+}
+
+
+/* Test important browser capabilities */
+
+try{
+
+const test =
+
+window.open(
+
+"",
+
+"_blank",
+
+"width=1,height=1"
+
+);
+
+if(test){
+
+test.close();
+
+}
+
+}catch(e){
+
+return true;
+
+}
+
+
+return false;
+
+
+}catch(e){
+
+return true;
+
+}
+
+}
+
+
+
+/* ==========================
+   BLOCK SCREEN
+========================== */
+
+function triggerBlockScreen(
+
+title,
+
+text
+
+){
+
+try{
+
+if(hls){
+
+hls.destroy();
+
+hls = null;
+
+}
+
+}catch(e){}
+
+
+try{
+
+if(player){
+
+player.destroy();
+
+}
+
+}catch(e){}
+
+
+try{
+
+video.pause();
+
+video.removeAttribute("src");
+
+video.load();
+
+}catch(e){}
+
+
+if(container){
+
+container.style.display = "none";
+
+}
+
+
+const overlay =
+
+document.createElement("div");
+
+
+overlay.className =
+
+"block-overlay";
+
+
+overlay.id =
+
+"sandbox-block-display";
+
+
+overlay.innerHTML = `
+
+<div class="block-box">
+
+<div class="block-icon">
+
+⚠
+
+</div>
+
+<div class="block-title">
+
+${title}
+
+</div>
+
+<div class="block-sub">
+
+${text}
+
+</div>
+
+</div>
+
+`;
+
+
+document.body.appendChild(overlay);
+
+}
+
+
+
+/* ==========================
+   RUN SANDBOX CHECK
+========================== */
+
+if(isSandboxedEnv()){
+
+triggerBlockScreen(
+
+"Disable Sandbox",
+
+"Open this page directly in Chrome browser and disable any ad blocker before playing the stream."
+
+);
+
+return;
+
+}
+
+
+
+/* ==========================
+   URL PARAMETER
+========================== */
+
+function getParam(name){
+
+const url =
+
+new URL(window.location.href);
+
+return url.searchParams.get(name);
+
+}
+
+
+const stream =
+
+getParam("embed");
+
+
+
+/* ==========================
+   UI FUNCTIONS
+========================== */
+
+function hideLoading(){
+
+loading.classList.add("hidden");
+
+}
+
+
+function showLoading(){
+
+loading.classList.remove("hidden");
+
+}
+
+
+function showMessage(
+
+title,
+
+text
+
+){
+
+hideLoading();
+
+messageTitle.textContent = title;
+
+messageSub.textContent = text;
+
+message.classList.add("show");
+
+}
+
+
+
+/* ==========================
+   VALIDATE STREAM
+========================== */
+
+if(!stream){
+
+showMessage(
+
+"No Stream Found",
+
+"Please provide a valid stream using the embed URL parameter."
+
+);
+
+return;
+
+}
+
+
+
+/* ==========================
+   PLAYER SETUP
+========================== */
+
+function createPlayer(
+
+qualityOptions = [0]
+
+){
+
+if(player){
+
+return;
+
+}
+
+
+player = new Plyr(
+
+video,
+
+{
+
+autoplay:true,
+
+controls:[
+
+'play-large',
+
+'play',
+
+'mute',
+
+'volume',
+
+'current-time',
+
+'settings',
+
+'pip',
+
+'fullscreen'
+
+],
+
+settings:[
+
+'quality',
+
+'speed'
+
+],
+
+quality:{
+
+default:0,
+
+options:qualityOptions,
+
+forced:true,
+
+onChange:function(q){
+
+if(!hls){
+
+return;
+
+}
+
+
+if(q === 0){
+
+hls.currentLevel = -1;
+
+return;
+
+}
+
+
+const levelIndex =
+
+hls.levels.findIndex(
+
+level => level.height === q
+
+);
+
+
+if(levelIndex !== -1){
+
+hls.currentLevel =
+
+levelIndex;
+
+}
+
+}
+
+}
+
+}
+
+);
+
+
+player.on(
+
+"playing",
+
+hideLoading
+
+);
+
+
+player.on(
+
+"waiting",
+
+showLoading
+
+);
+
+
+player.on(
+
+"stalled",
+
+showLoading
+
+);
+
+}
+
+
+
+/* ==========================
+   HLS PLAYBACK
+========================== */
+
+if(
+
+window.Hls &&
+
+Hls.isSupported()
+
+){
+
+hls = new Hls({
+
+enableWorker:true,
+
+lowLatencyMode:true,
+
+backBufferLength:30,
+
+maxBufferLength:30,
+
+maxMaxBufferLength:60,
+
+startLevel:-1,
+
+capLevelToPlayerSize:true
+
+});
+
+
+hls.loadSource(stream);
+
+hls.attachMedia(video);
+
+
+
+/* MANIFEST READY */
+
+hls.on(
+
+Hls.Events.MANIFEST_PARSED,
+
+function(){
+
+const qualities =
+
+[
+
+...new Set(
+
+hls.levels
+
+.map(level => level.height)
+
+.filter(Boolean)
+
+)
+
+]
+
+.sort(
+
+(a,b) => b-a
+
+);
+
+
+createPlayer(
+
+[0,...qualities]
+
+);
+
+
+hideLoading();
+
+
+video.play()
+
+.catch(function(){
+
+/*
+
+Autoplay can be blocked.
+
+Plyr play button remains available.
+
+*/
+
+});
+
+}
+
+);
+
+
+
+/* ERROR RECOVERY */
+
+hls.on(
+
+Hls.Events.ERROR,
+
+function(event,data){
+
+if(!data.fatal){
+
+return;
+
+}
+
+
+switch(data.type){
+
+
+case Hls.ErrorTypes.NETWORK_ERROR:
+
+
+if(networkRecovery < 3){
+
+networkRecovery++;
+
+showLoading();
+
+setTimeout(function(){
+
+hls.startLoad();
+
+},1000);
+
+}else{
+
+showMessage(
+
+"Network Error",
+
+"The stream server is not responding. Please try again later."
+
+);
+
+}
+
+break;
+
+
+
+case Hls.ErrorTypes.MEDIA_ERROR:
+
+
+if(mediaRecovery < 3){
+
+mediaRecovery++;
+
+hls.recoverMediaError();
+
+}else{
+
+showMessage(
+
+"Playback Error",
+
+"The browser could not decode this stream."
+
+);
+
+}
+
+break;
+
+
+
+default:
+
+
+hls.destroy();
+
+showMessage(
+
+"Stream Error",
+
+"The live stream could not be loaded."
+
+);
+
+break;
+
+}
+
+}
+
+);
+
+
+
+/* RESET RECOVERY COUNTERS */
+
+hls.on(
+
+Hls.Events.FRAG_LOADED,
+
+function(){
+
+networkRecovery = 0;
+
+mediaRecovery = 0;
+
+}
+
+);
+
+
+}
+
+
+
+/* ==========================
+   NATIVE HLS
+========================== */
+
+else if(
+
+video.canPlayType(
+
+'application/vnd.apple.mpegurl'
+
+)
+
+){
+
+video.src = stream;
+
+
+createPlayer();
+
+
+video.addEventListener(
+
+"loadedmetadata",
+
+function(){
+
+hideLoading();
+
+video.play().catch(()=>{});
+
+}
+
+);
+
+
+video.addEventListener(
+
+"error",
+
+function(){
+
+showMessage(
+
+"Stream Error",
+
+"The live stream could not be played."
+
+);
+
+}
+
+);
+
+}
+
+
+
+/* ==========================
+   UNSUPPORTED BROWSER
+========================== */
+
+else{
+
+showMessage(
+
+"Browser Not Supported",
+
+"This browser does not support HLS video playback."
+
+);
+
+}
+
+
+
+/* ==========================
+   CLEANUP
+========================== */
+
+window.addEventListener(
+
+"beforeunload",
+
+function(){
+
+try{
+
+if(hls){
+
+hls.destroy();
+
+}
+
+}catch(e){}
+
+}
+
+);
+
+
+})();
+
+</script>
+
+
+
+
+
+
+
+</body><div style="position: fixed; inset: 0px; z-index: 2147483647; pointer-events: auto;"></div></html>
