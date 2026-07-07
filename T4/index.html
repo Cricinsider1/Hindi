@@ -1,133 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cricinsider365</title>
-  <script src="https://content.jwplatform.com/libraries/KB5zFt7A.js"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #000000, #1a1a1a);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="referrer" content="no-referrer">
+<title>TG_@Cricinsider365</title>
 
-    #logo {
-      position: absolute;
-      top: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      cursor: pointer;
-    }
+<!-- Plyr + HLS.js -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
 
-    #logo img {
-      width: 180px;
-      height: auto;
-    }
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: black;
+  font-family: sans-serif;
+}
 
-    #video {
-      width: 90%;
-      max-width: 720px;
-      margin: 60px auto 20px auto;
-      border: 2px solid #1e90ff;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-      transition: border 0.3s;
-    }
+#player-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
 
-    .fullscreen #video {
-      border: none;
-      box-shadow: none;
-    }
+#plyr-player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: black;
+}
 
-    #telegramButton {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 250px;
-      height: 50px;
-      background: linear-gradient(90deg, #1e90ff, #001f3f);
-      color: white;
-      font-weight: bold;
-      font-size: 16px;
-      border: none;
-      border-radius: 25px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-      cursor: pointer;
-      overflow: hidden;
-      position: relative;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
+#telegramButton {
+  display: block;
+  width: 220px;
+  margin: 15px auto;
+  padding: 12px 20px;
+  background: #0088cc;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.2s;
+}
 
-    #telegramButton:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-      background: linear-gradient(90deg, #001f3f, #1e90ff);
-    }
-  </style>
+#telegramButton:hover {
+  background: #00a2e8;
+  transform: scale(1.05);
+}
+
+#popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+}
+
+.modal {
+  background: #1e1e1e;
+  padding: 25px 30px;
+  border-radius: 12px;
+  text-align: center;
+  color: #fff;
+  max-width: 300px;
+  width: 90%;
+  box-shadow: 0 0 20px rgba(0, 136, 204, 0.5);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal h2 {
+  margin-top: 0;
+  color: #0088cc;
+}
+
+.modal button {
+  margin: 10px 5px 0;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#joinButton {
+  background: #0088cc;
+  color: #fff;
+}
+
+#joinButton:hover {
+  background: #00a2e8;
+}
+
+#closeButton {
+  background: #444;
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: scale(0.95);}
+  to {opacity: 1; transform: scale(1);}
+}
+</style>
 </head>
+
 <body>
 
-  <!-- Logo -->
-  <div id="logo" onclick="redirectToWebsite()">
-    <img src="https://i.postimg.cc/fRSw4ZRD/IMG-20250925-223757.jpg" alt="Logo" />
-  </div>
+<div id="player-container">
+  <video id="plyr-player" controls playsinline></video>
+  <button id="telegramButton">Join Telegram</button>
+</div>
 
-  <!-- Video Player -->
-  <div id="video"></div>
+<script>
+// Get URL param
+function getQueryParam(param) {
+  return new URLSearchParams(window.location.search).get(param);
+}
 
-  <!-- Telegram Button -->
-  <div id="telegramButton" onclick="redirectToTelegram()">
-    Join Telegram For More Live Links 
-  </div>
+const videoSrc = getQueryParam('url');
+const video = document.getElementById('plyr-player');
 
-  <script>
-    // Initialize JWPlayer
-    const playerInstance = jwplayer("video").setup({
-      width: "100%",
-      aspectratio: "16:9",
-      autostart: true,
-      mute: false,
-      file: "https://loura-stream-sonu.pages.dev/live/cdn101.m3u8",
-      skin: {
-        name: "glow"
-      }
+// Load Video
+if (videoSrc) {
+  if (Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(videoSrc);
+    hls.attachMedia(video);
+
+    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+      const availableQualities = hls.levels
+        .map(l => l.height)
+        .filter((v, i, a) => a.indexOf(v) === i)
+        .sort((a, b) => b - a);
+
+      const player = new Plyr(video, {
+        autoplay: true,
+        muted: true,
+        settings: ['quality', 'speed', 'loop'],
+        quality: {
+          default: availableQualities[0],
+          options: availableQualities,
+          forced: true,
+          onChange: (newQuality) => {
+            hls.levels.forEach((level, index) => {
+              if (level.height === newQuality) hls.currentLevel = index;
+            });
+          }
+        }
+      });
+
+      if (availableQualities.length) hls.currentLevel = hls.levels.length - 1;
     });
 
-    // Handle fullscreen class
-    playerInstance.on('fullscreen', function (event) {
-      if (event.fullscreen) {
-        document.body.classList.add('fullscreen');
-      } else {
-        document.body.classList.remove('fullscreen');
-      }
-    });
+  } else {
+    video.src = videoSrc;
+    new Plyr(video, { autoplay: true, muted: true });
+  }
+}
 
-    // Telegram redirect
-    function redirectToTelegram() {
-      window.location.href = "https://t.me/+IhSW51QysxU3NzY1";
-    }
+// Popup On Load
+window.addEventListener("load", function () {
+  const container = document.createElement('div');
+  container.id = 'popup-container';
+  document.body.appendChild(container);
 
-    // Logo redirect
-    function redirectToWebsite() {
-      window.location.href = "https://t.me/+IhSW51QysxU3NzY1";
-    }
+  const popup = document.createElement('div');
+  popup.className = 'modal';
 
-    // Optional: Prompt before redirecting
-    window.onload = function () {
-      if (confirm("Join Our Telegram Channel to stay updated!")) {
-        redirectToTelegram();
-      }
-    };
-  </script>
+  popup.innerHTML = `
+    <h2>Support Us!</h2>
+    <p>Join our Telegram channel <br><strong>@Cricinsider365</strong></p>
+    <button id="joinButton">Join Now</button>
+    <button id="closeButton">Already Joined</button>
+  `;
+
+  container.appendChild(popup);
+
+  popup.querySelector('#joinButton').onclick = () => {
+    window.open("https://t.me/+IhSW51QysxU3NzY1", "_blank");
+    container.remove();
+  };
+  popup.querySelector('#closeButton').onclick = () => container.remove();
+});
+
+// Telegram button
+document.getElementById('telegramButton').onclick = () => {
+  window.open("https://t.me/+IhSW51QysxU3NzY1", "_blank");
+};
+</script>
+
 </body>
 </html>
