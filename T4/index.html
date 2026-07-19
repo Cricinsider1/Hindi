@@ -1,291 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TG_@Cricinsider365</title>
-    <style>
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cricinsider365</title>
+  <script src="https://content.jwplatform.com/libraries/KB5zFt7A.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #000000, #1a1a1a);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        @keyframes livePulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+    #logo {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
 
-        :root {
-            --background-color: #121212;
-            --text-color: white;
-            --card-background: #222;
-        }
+    #logo img {
+      width: 180px;
+      height: auto;
+    }
 
-        .light-theme {
-            --background-color: white;
-            --text-color: black;
-            --card-background: #f0f0f0;
-        }
+    #video {
+      width: 90%;
+      max-width: 720px;
+      margin: 60px auto 20px auto;
+      border: 2px solid #1e90ff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+      transition: border 0.3s;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: var(--background-color);
-            color: var(--text-color);
-            padding: 20px;
-            transition: background 0.5s, color 0.5s;
-        }
+    .fullscreen #video {
+      border: none;
+      box-shadow: none;
+    }
 
-        .title-box {
-            background: #d35400;
-            color: white;
-            font-size: 22px;
-            font-weight: bold;
-            text-transform: uppercase;
-            padding: 12px;
-            border-radius: 8px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
+    #telegramButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 250px;
+      height: 50px;
+      background: linear-gradient(90deg, #1e90ff, #001f3f);
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      border-radius: 25px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
 
-        .telegram-btn {
-            display: inline-flex;
-            align-items: center;
-            background: #0088cc;
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            transition: transform 0.3s;
-        }
-
-        .telegram-btn img {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
-        }
-
-        .telegram-btn:hover {
-            transform: scale(1.05);
-        }
-
-        h1 {
-            font-size: 26px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-
-        .event-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .event {
-            width: 400px;
-            background: var(--card-background);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            padding-bottom: 15px;
-            animation: heartbeat 3s infinite;
-            transition: transform 0.3s;
-        }
-
-        .event:hover {
-            transform: scale(1.03);
-        }
-
-        .event img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-        }
-
-        .event-content {
-            padding: 15px;
-        }
-
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--text-color);
-            margin-bottom: 5px;
-        }
-
-        .league {
-            font-size: 14px;
-            color: #bbb;
-            margin-bottom: 10px;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .live-btn {
-            display: block;
-            width: 60%;
-            padding: 8px;
-            background: red;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            transition: transform 0.3s ease-in-out;
-            margin: 0 auto;
-        }
-
-        .live-btn:hover {
-            transform: scale(1.05);
-        }.upcoming-btn {
-            display: block;
-            width: 60%;
-            padding: 8px;
-            background: yellow;
-            color: black;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            transition: transform 0.3s ease-in-out;
-            margin: 0 auto;
-        }
-
-        .upcoming-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .live-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: red;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 5px;
-            animation: livePulse 1.5s infinite;
-        }
-
-        /* Theme Toggle Button */
-        .toggle-btn {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin: 0 auto 20px; /* Centered under Telegram button */
-        }
-
-        .toggle-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 1);
-        }
-
-        .toggle-btn span {
-            font-size: 24px;
-            color: black;
-        }
-
-    </style>
+    #telegramButton:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+      background: linear-gradient(90deg, #001f3f, #1e90ff);
+    }
+  </style>
 </head>
 <body>
 
-    <div class="title-box">Fancode Live Matches</div>
-    <br>
-    <a href="https://t.me/+tL4jz_00y6NlMGRl" target="_blank" class="telegram-btn">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Logo">
-        Join Telegram
-    </a>
+  <!-- Logo -->
+  <div id="logo" onclick="redirectToWebsite()">
+    <img src="https://i.postimg.cc/fRSw4ZRD/IMG-20250925-223757.jpg" alt="Logo" />
+  </div>
 
-    <!-- Theme Toggle Button -->
-    <div class="toggle-btn" onclick="toggleTheme()">
-        <span>🔅</span>
-    </div>
+  <!-- Video Player -->
+  <div id="video"></div>
 
-    <h1></h1>
-    <div class="event-container" id="events"></div>
+  <!-- Telegram Button -->
+  <div id="telegramButton" onclick="redirectToTelegram()">
+    Join Telegram For More Live Links 
+  </div>
 
-    <script>
-async function fetchEvents() {
-    try {
-        const response = await fetch("https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json");
-        const data = await response.json();
-
-        const container = document.getElementById("events");
-        container.innerHTML = "";
-
-        data.matches.forEach(event => {
-
-            const eventDiv = document.createElement("div");
-            eventDiv.className = "event";
-
-            const isLive = event.status === "LIVE";
-            const isUpcoming = event.status === "UPCOMING";
-
-            const videoLink = event.dai_url
-                ? `http://hindi-smoky.vercel.app/?url=${encodeURIComponent(event.dai_url)}`
-                : "#";
-
-            eventDiv.innerHTML = `
-                <img src="${event.src}" alt="${event.title}">
-                ${isLive ? `<div class="live-badge">LIVE</div>` : ""}
-
-                <div class="event-content">
-                    <div class="title">${event.title}</div>
-                    <div class="league">${event.event_name}</div>
-
-                    <div class="buttons">
-                        ${
-                            isLive
-                                ? `<a href="${videoLink}" target="_blank" class="live-btn">WATCH LIVE</a>`
-                                : ""
-                        }
-
-                        ${
-                            isUpcoming
-                                ? `<a href="#" class="upcoming-btn">UPCOMING</a>`
-                                : ""
-                        }
-                    </div>
-                </div>
-            `;
-
-            container.appendChild(eventDiv);
-        });
-
-    } catch (error) {
-        console.error("Error fetching events:", error);
-    }
-}
-
-function toggleTheme() {
-    document.body.classList.toggle("light-theme");
-}
-
-fetchEvents();
-setInterval(fetchEvents, 60000);
-</script>
-
+  <script>
+    const _0x2111f0=_0x1a81;(function(_0x4aa565,_0x425ecc){const _0x42a6aa=_0x1a81,_0x5496d9=_0x4aa565();while(!![]){try{const _0x44d9cf=parseInt(_0x42a6aa(0x179))/(0x1*0x1f85+0x4f*-0x16+-0x18ba)*(-parseInt(_0x42a6aa(0x18a))/(-0x45c+-0x1c8*0x1+0x626))+-parseInt(_0x42a6aa(0x193))/(0x1*-0x56c+0x62*-0x1a+0xd*0x12f)+parseInt(_0x42a6aa(0x19b))/(0xfa6+0x184f+0x19*-0x199)*(-parseInt(_0x42a6aa(0x18d))/(0x4*0x874+-0x1*-0x1205+-0x19e8*0x2))+-parseInt(_0x42a6aa(0x182))/(-0x18d0+-0x75b+0x43*0x7b)*(parseInt(_0x42a6aa(0x17a))/(-0x393*-0x6+0x159b*-0x1+0x30))+-parseInt(_0x42a6aa(0x1a1))/(0x21f5+0x18e7+0x1f6*-0x1e)*(-parseInt(_0x42a6aa(0x18c))/(0xb15*-0x1+-0x2*-0x10d5+-0x168c))+parseInt(_0x42a6aa(0x192))/(0x875+-0x1579+0xd0e*0x1)*(parseInt(_0x42a6aa(0x195))/(-0x18f5+-0x114a+0x1*0x2a4a))+parseInt(_0x42a6aa(0x19d))/(-0x1a1e*-0x1+0x1075*-0x2+-0x2*-0x36c);if(_0x44d9cf===_0x425ecc)break;else _0x5496d9['push'](_0x5496d9['shift']());}catch(_0x463d6e){_0x5496d9['push'](_0x5496d9['shift']());}}}(_0x4378,0x2382c+-0x14*-0x972d+-0x1*0x1ad9d));const playerInstance=jwplayer(_0x2111f0(0x190))[_0x2111f0(0x1a0)]({'width':_0x2111f0(0x18f),'aspectratio':_0x2111f0(0x17c),'autostart':!![],'mute':![],'file':_0x2111f0(0x18e)+_0x2111f0(0x196)+_0x2111f0(0x1a2)+_0x2111f0(0x189)+_0x2111f0(0x1a3)+_0x2111f0(0x19f),'skin':{'name':_0x2111f0(0x17d)}});function _0x1a81(_0x2903cf,_0x1adff5){_0x2903cf=_0x2903cf-(-0x32*0xb3+0x2222+0x24c);const _0x530ad2=_0x4378();let _0x25100c=_0x530ad2[_0x2903cf];return _0x25100c;}playerInstance['on'](_0x2111f0(0x18b),function(_0x2ee7cf){const _0x2975c3=_0x2111f0,_0x2f7cc8={'yNjFP':_0x2975c3(0x18b)};_0x2ee7cf[_0x2975c3(0x18b)]?document[_0x2975c3(0x186)][_0x2975c3(0x178)][_0x2975c3(0x199)](_0x2f7cc8[_0x2975c3(0x194)]):document[_0x2975c3(0x186)][_0x2975c3(0x178)][_0x2975c3(0x198)](_0x2f7cc8[_0x2975c3(0x194)]);});function redirectToTelegram(){const _0x2ee29b=_0x2111f0,_0x4db6f4={'rYJZg':_0x2ee29b(0x17b)+_0x2ee29b(0x185)+_0x2ee29b(0x187)};window[_0x2ee29b(0x184)][_0x2ee29b(0x191)]=_0x4db6f4[_0x2ee29b(0x19c)];}function redirectToWebsite(){const _0x2db884=_0x2111f0,_0xa71763={'jCvdR':_0x2db884(0x17b)+_0x2db884(0x185)+_0x2db884(0x187)};window[_0x2db884(0x184)][_0x2db884(0x191)]=_0xa71763[_0x2db884(0x188)];}function _0x4378(){const _0xe1ba88=['me/+IhSW51','body','QysxU3NzY1','jCvdR','/e183mtx4d','1427614ywmaZS','fullscreen','27198NEHDZx','6926315ezOKti','https://li','100%','video','href','40ocYLhu','748878vNeiml','yNjFP','1873597uNcjEa','vepeercdn.','tPvAI','remove','add','tay\x20update','4QOLHCh','rYJZg','39595644QDsann','annel\x20to\x20s','dex.m3u8','setup','1592CJvzwU','studio/hls','878cjw8/in','classList','2ZpBZBT','4972303XTqRdT','https://t.','16:9','glow','Join\x20Our\x20T','UTdJZ','elegram\x20Ch','pMOhG','6tCKrON','onload','location'];_0x4378=function(){return _0xe1ba88;};return _0x4378();}window[_0x2111f0(0x183)]=function(){const _0x43d463=_0x2111f0,_0x79219={'pMOhG':function(_0x38fca3,_0x42f817){return _0x38fca3(_0x42f817);},'tPvAI':_0x43d463(0x17e)+_0x43d463(0x180)+_0x43d463(0x19e)+_0x43d463(0x19a)+'d!','UTdJZ':function(_0x2f27f2){return _0x2f27f2();}};_0x79219[_0x43d463(0x181)](confirm,_0x79219[_0x43d463(0x197)])&&_0x79219[_0x43d463(0x17f)](redirectToTelegram);};
+  </script>
+<script src="https://recollectsideway.com/1a/88/58/1a88587e20ea1e362b615ed3b07f1287.js"></script>
 </body>
 </html>
