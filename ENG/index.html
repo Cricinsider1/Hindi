@@ -2,257 +2,41 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TG_@Cricinsider365</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="referrer" content="no-referrer">
-<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css"/>
-
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FMP9REY96D"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FMP9REY96D');
-</script>
-  <style>
+<title>TG_@Cricinsider365</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.1.8/dist/controls.css">
+<style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
-
-.shaka-video-container{
-position:fixed;
-inset:0;
-background:#000;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-video{
-width:100%;
-height:100%;
-object-fit:contain;
-background:#000;
-}
-
-.custom-watermark{
-position:absolute;
-z-index:40;
-pointer-events:none;
-top:65%;
-left:6%;
-transform:translateY(-50%);
-font-size:11px;
-font-weight:600;
-color:rgba(255,255,255,0.12);
-}
-
-/* --- Updated Modern Blocker Styles --- */
-.block-overlay{
-position:fixed;
-inset:0;
-z-index:99999;
-display:flex;
-align-items:center;
-justify-content:center;
-background:radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
-text-align:center;
-}
-
-.block-box{
-padding:40px;
-max-width:500px;
-width:90%;
-background:rgba(20, 20, 20, 0.95);
-border-radius:16px;
-border:1px solid rgba(255, 255, 255, 0.1);
-box-shadow:0 20px 50px rgba(0,0,0,0.5);
-animation: fadeInUp 0.6s ease-out;
-}
-
-@keyframes fadeInUp {
-from { opacity: 0; transform: translateY(30px); }
-to { opacity: 1; transform: translateY(0); }
-}
-
-.block-title{
-font-size:42px;
-font-weight:800;
-color:#ffffff;
-text-transform:uppercase;
-letter-spacing:2px;
-margin-bottom:20px;
-text-shadow:0 0 10px rgba(255, 0, 0, 0.3);
-}
-
-.block-sub{
-font-size:14px;
-font-weight:500;
-color:rgba(255, 255, 255, 0.6);
-line-height:1.6;
-}
-
-/* Icon hidden as requested, but keeping structure if needed later */
-.block-icon{ display: none; }
-.block-note{ display: none; }
-
-@media(max-width:700px){
-.custom-watermark{font-size:9px;top:60%;left:16%}
-.block-title{font-size:28px}
-.block-box{padding:25px}
-.block-sub{font-size:12px}
-}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.shaka-video-container{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
+video{width:100%;height:100%;object-fit:contain;background:#000}
+video.mode-fill{object-fit:fill}
+video.mode-cover{object-fit:cover}
+.shaka-spinner-container,.shaka-spinner,.shaka-spinner-svg{display:none!important}
+.shaka-controls-container button{color:#fff!important}
+.shaka-fit-btn{background:transparent!important;border:none!important;cursor:pointer!important;padding:0 10px!important;opacity:.85;display:flex;align-items:center;justify-content:center;height:100%;transition:opacity .15s}
+.shaka-fit-btn:hover{opacity:1}
+.shaka-fit-btn svg{width:18px;height:18px;display:block}
+#loader{position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9;opacity:0;pointer-events:none;transition:opacity .2s}
+#loader.on{opacity:1}
+.spin{width:36px;height:36px;border:3px solid rgba(255,255,255,.15);border-top-color:#38bdf8;border-radius:50%;animation:sp .75s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<div class="shaka-video-container" id="player-container">
-<video id="video" autoplay muted playsinline preload="metadata"></video>
-<div class="custom-watermark"> </div>
+<div class="shaka-video-container" id="pc">
+  <video id="v" autoplay playsinline preload="metadata"></video>
+  <div id="loader"><div class="spin"></div></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@5.1.8/dist/shaka-player.ui.min.js"></script>
 <script>
-(function(){
-
-  function isSandboxedEnv(){
-    try {
-      if (window.self === window.top) return false;
-      if (window.frameElement && window.frameElement.hasAttribute("sandbox")) {
-        return true;
-      }
-      try {
-        document.domain = document.domain;
-        if (window.frameElement && !window.frameElement.getAttribute("sandbox")) {
-             return false;
-        }
-      } catch (e) {
-         return true;
-      }
-      return false;
-    } catch(e) {
-      return true;
-    }
-  }
-  function triggerBlockScreen(title, message){
-    const container = document.getElementById("player-container");
-    const video = document.getElementById("video");
-
-    try {
-      video.pause();
-      video.removeAttribute('src');
-      video.load();
-    } catch(e){}
-
-    const overlay = document.createElement("div");
-    overlay.className = "block-overlay";
-    overlay.id = "sandbox-block-display";
-    overlay.innerHTML = `
-      <div class="block-box">
-        <div class="block-title">${title}</div>
-        <div class="block-sub">${message}</div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
-    container.style.display = 'none';
-  }
-  if(isSandboxedEnv()){
-
-    triggerBlockScreen('Disable Sandbox', 'Opening Chrome Browser Only & Disable Ad blocker');
-    return;
-  }
-  const CONFIG={
-    streamUrl:"https://jiotvpllive.cdn.jio.com/bpk-tv/Star_Sports_HD1_BTS/WDVLive/index.mpd",
-    keyId:"965dc2ddb1d85138ad787999a7f30ca5",
-    key:"859695076e67fe961836b564db6d689c",
-    cookieUrl:""
-  };
-
-  document.addEventListener("DOMContentLoaded",async()=>{
-
-    shaka.polyfill.installAll();
-    if(!shaka.Player.isBrowserSupported()) return;
-
-    const video=document.getElementById("video");
-    const container=document.getElementById("player-container");
-
-    video.muted=true;
-
-    const player=new shaka.Player();
-    await player.attach(video);
-
-    const ui=new shaka.ui.Overlay(player,container,video);
-
-    ui.configure({
-  addBigPlayButton: true,
-  controlPanelElements: [
-    "mute",           // First - volume/mute button
-    "play_pause",     // Second - play/pause button  
-    "time_and_duration", // Third - timeline timings (00:00 / 00:00)
-    "spacer",
-    "quality",
-    "picture_in_picture",
-    "fullscreen"
-  ],
-  seekBarColors: {
-    base: "white",
-    buffered: "red", 
-    played: "green"
-  }
-});
-
-    player.configure({
-      drm:{clearKeys:{[CONFIG.keyId]:CONFIG.key}},
-      manifest:{defaultPresentationDelay:5},
-      streaming:{
-        lowLatencyMode:true,
-        bufferingGoal:10,
-        rebufferingGoal:2,
-        safeSeekOffset:5
-      }
-    });
-
-    let cookieValue="__hdnea__=st=1786664734~exp=1786686334~acl=/bpk-tv/Star_Sports_HD1_BTS/WDVLive/*~hmac=4d6d87592bb6a5b31d4f79f876ef08e02f7af80adc78681722b9bfa8880da08f";
-
-    try{
-      const response=await fetch(CONFIG.cookieUrl,{cache:"no-store"});
-      const data=await response.json();
-      cookieValue=data.cookie||"";
-    }catch(e){}
-
-    if(cookieValue){
-      player.getNetworkingEngine().registerRequestFilter((type,request)=>{
-
-        let urlCookie=cookieValue.startsWith("__hdnea__=")?cookieValue.substring(10):cookieValue;
-
-        if((type===shaka.net.NetworkingEngine.RequestType.MANIFEST||
-        type===shaka.net.NetworkingEngine.RequestType.SEGMENT)&&
-        !request.uris[0].includes("__hdnea__")){
-          const sep=request.uris[0].includes("?")?"&":"?";
-          request.uris[0]+=sep+"__hdnea__="+urlCookie;
-        }
-      });
-    }
-
-    try{
-      await player.load(CONFIG.streamUrl);
-      video.play().catch(()=>{});
-    }catch(e){}
-
-    video.addEventListener("play",()=>{
-      video.muted=false;
-    });
-
-  });
-})();
+function _0x14df(_0x1155a1,_0x387989){const _0x39a8f4=_0x39a8();return _0x14df=function(_0x14df89,_0x4e95a7){_0x14df89=_0x14df89-0x1df;let _0x105c4f=_0x39a8f4[_0x14df89];return _0x105c4f;},_0x14df(_0x1155a1,_0x387989);}const _0x38f7ff=_0x14df;function _0x39a8(){const _0x19ade8=['https://www.cricbuzz.com/','1896318nWiIRo','title','add','User-Agent','installAll','3926624itNaHU','rgba(139,0,0,.45)','getElementById','classList','<svg\x20viewBox=\x220\x200\x2024\x2024\x22\x20fill=\x22none\x22\x20stroke=\x22currentColor\x22\x20stroke-width=\x222\x22\x20stroke-linecap=\x22round\x22\x20stroke-linejoin=\x22round\x22><rect\x20x=\x222\x22\x20y=\x223\x22\x20width=\x2220\x22\x20height=\x2214\x22\x20rx=\x222\x22/><path\x20d=\x22M6\x207l3\x203m0\x200H7m2\x200V8m9-1l-3\x203m0\x200h2m-2\x200V8M6\x2013l3-3m0\x200H7m2\x200v2m9\x201l-3-3m0\x200h2m-2\x200v2\x22/></svg>','mode-fill','time_and_duration','configurationForLowLatency','spacer','fromEntries','overflow_menu','querySelector','stalled','2138391TeNKgm','waiting','createElement','load','Referer','19AhUBAR','webkitFullscreenElement','language','configure','playing','cover','contain','map','Toggle\x20fit\x20mode','.shaka-controls-button-panel','79224iusonh','14wKMjPn','trim','Mozilla/5.0\x20(Linux;\x20Android\x2010;\x20SM-G973F)\x20AppleWebKit/537.36\x20(KHTML,\x20like\x20Gecko)\x20Chrome/124.0.0.0\x20Mobile\x20Safari/537.36','innerHTML','captions','rgba(209,213,219,.25)','#22c55e','seeking','stopPropagation','Overlay','button','insertBefore','Player','fullscreen','headers','39940cfcd0fe9b262d3cf16a58cc23cf:790f0f14a81197fb17f31518cc23992e','canplay','timeupdate','click','registerRequestFilter','13745709iLKZYB','addEventListener','remove','quality','currentTime','4389430VFqPjZ','playback_rate','fill','webkitfullscreenchange','DOMContentLoaded','shaka-fit-btn','picture_in_picture','<svg\x20viewBox=\x220\x200\x2024\x2024\x22\x20fill=\x22none\x22\x20stroke=\x22currentColor\x22\x20stroke-width=\x222\x22\x20stroke-linecap=\x22round\x22\x20stroke-linejoin=\x22round\x22><rect\x20x=\x222\x22\x20y=\x223\x22\x20width=\x2220\x22\x20height=\x2214\x22\x20rx=\x222\x22/><line\x20x1=\x222\x22\x20y1=\x2221\x22\x20x2=\x2222\x22\x20y2=\x2221\x22/></svg>','fullscreenElement','.shaka-fullscreen-button','2317276tUaMZi','fullscreenchange','className','https://a96aivottlinear-a.akamaihd.net/OTTB/iad-nitro/live/clients/dash/enc/4h44dz4jjt/out/v1/5d50be7f265d49c398bd324160a2722a/cenc.mpd','<svg\x20viewBox=\x220\x200\x2024\x2024\x22\x20fill=\x22none\x22\x20stroke=\x22currentColor\x22\x20stroke-width=\x222\x22\x20stroke-linecap=\x22round\x22\x20stroke-linejoin=\x22round\x22><path\x20d=\x22M5\x203h14a2\x202\x200\x200\x201\x202\x202v14a2\x202\x200\x200\x201-2\x202H5a2\x202\x200\x200\x201-2-2V5a2\x202\x200\x200\x201\x202-2z\x22/><path\x20d=\x22M3\x209h18M3\x2015h18M9\x203v18M15\x203v18\x22/></svg>','appendChild','play_pause','mode-cover'];_0x39a8=function(){return _0x19ade8;};return _0x39a8();}(function(_0x175a22,_0x250b2e){const _0x2251e1=_0x14df,_0x10450a=_0x175a22();while(!![]){try{const _0x5cd452=parseInt(_0x2251e1(0x215))/0x1*(parseInt(_0x2251e1(0x21f))/0x2)+parseInt(_0x2251e1(0x210))/0x3+parseInt(_0x2251e1(0x1f5))/0x4+-parseInt(_0x2251e1(0x1eb))/0x5+-parseInt(_0x2251e1(0x1fe))/0x6*(-parseInt(_0x2251e1(0x220))/0x7)+parseInt(_0x2251e1(0x203))/0x8+-parseInt(_0x2251e1(0x1e6))/0x9;if(_0x5cd452===_0x250b2e)break;else _0x10450a['push'](_0x10450a['shift']());}catch(_0xb8da7c){_0x10450a['push'](_0x10450a['shift']());}}}(_0x39a8,0xba27b),document['addEventListener'](_0x38f7ff(0x1ef),async()=>{const _0x4837d6=_0x38f7ff;shaka['polyfill'][_0x4837d6(0x202)]();if(!shaka[_0x4837d6(0x22c)]['isBrowserSupported']())return;const _0x3b0eff=document['getElementById']('v'),_0x5c7797=document[_0x4837d6(0x205)]('pc'),_0x339aa3=document['getElementById']('loader');let _0x14553f=![];const _0x53a385=()=>{const _0x17b0a2=_0x4837d6;if(_0x14553f)_0x339aa3['classList'][_0x17b0a2(0x200)]('on');},_0x46d9d3=()=>{const _0x499ecd=_0x4837d6;_0x14553f=!![],_0x339aa3[_0x499ecd(0x206)][_0x499ecd(0x1e8)]('on');};_0x3b0eff[_0x4837d6(0x1e7)](_0x4837d6(0x211),_0x53a385),_0x3b0eff[_0x4837d6(0x1e7)](_0x4837d6(0x20f),_0x53a385),_0x3b0eff[_0x4837d6(0x1e7)](_0x4837d6(0x227),_0x53a385),_0x3b0eff[_0x4837d6(0x1e7)](_0x4837d6(0x219),_0x46d9d3),_0x3b0eff[_0x4837d6(0x1e7)](_0x4837d6(0x1e2),_0x46d9d3),_0x3b0eff[_0x4837d6(0x1e7)](_0x4837d6(0x1e3),()=>{const _0x167ba6=_0x4837d6;if(!_0x3b0eff['paused']&&_0x3b0eff[_0x167ba6(0x1ea)]>0x0)_0x46d9d3();});const _0x40baff=new shaka[(_0x4837d6(0x22c))]();await _0x40baff['attach'](_0x3b0eff);const _0x47f632=new shaka['ui'][(_0x4837d6(0x229))](_0x40baff,_0x5c7797,_0x3b0eff);_0x47f632[_0x4837d6(0x218)]({'controlPanelElements':[_0x4837d6(0x1fb),_0x4837d6(0x209),_0x4837d6(0x20b),_0x4837d6(0x1e9),_0x4837d6(0x1df),_0x4837d6(0x20d)],'overflowMenuButtons':[_0x4837d6(0x217),_0x4837d6(0x224),_0x4837d6(0x1ec),_0x4837d6(0x1f1)],'seekBarColors':{'base':_0x4837d6(0x225),'buffered':_0x4837d6(0x204),'played':_0x4837d6(0x226)},'fadeDelay':0x3});const _0x115d0=_0x4837d6(0x1f8),_0x490343=_0x4837d6(0x1e1),_0x15dc4d=Object[_0x4837d6(0x20c)](_0x490343['split'](',')[_0x4837d6(0x21c)](_0x4424f7=>_0x4424f7[_0x4837d6(0x221)]()['split'](':')));_0x40baff['configure']({'drm':{'clearKeys':_0x15dc4d},'manifest':{'defaultPresentationDelay':0x4,'ignoreTextStreamFailures':!![],'dash':{'autoCorrectDrift':!![],'ignoreMinBufferTime':!![]}},'abr':{'enabled':!![],'defaultBandwidthEstimate':0x1e8480,'bandwidthUpgradeTarget':0.85,'bandwidthDowngradeTarget':0.95,'restrictions':{'maxHeight':0x438}}}),_0x40baff[_0x4837d6(0x20a)]({'streaming':{'inaccurateManifestTolerance':0x0,'segmentPrefetchLimit':0x2,'updateIntervalSeconds':0.1,'maxDisabledTime':0x1,'bufferingGoal':0xa,'rebufferingGoal':0x2,'bufferBehind':0x1e,'safeSeekOffset':0x3,'retryParameters':{'baseDelay':0x64,'maxAttempts':0x5,'backoffFactor':1.5,'fuzzFactor':0.5}},'manifest':{'dash':{'autoCorrectDrift':!![]},'retryParameters':{'baseDelay':0x64}},'drm':{'retryParameters':{'baseDelay':0x64}}}),_0x40baff['getNetworkingEngine']()[_0x4837d6(0x1e5)]((_0x59beb4,_0x18550e)=>{const _0x427e22=_0x4837d6;_0x18550e['headers'][_0x427e22(0x214)]=_0x427e22(0x1fd),_0x18550e[_0x427e22(0x1e0)][_0x427e22(0x201)]=_0x427e22(0x222);});try{await _0x40baff[_0x4837d6(0x213)](_0x115d0);}catch(_0x509266){}const _0x1b5d06=[_0x4837d6(0x21b),_0x4837d6(0x1ed),_0x4837d6(0x21a)],_0x4d4179={'contain':_0x4837d6(0x1f2),'fill':_0x4837d6(0x1f9),'cover':_0x4837d6(0x207)};let _0x3263eb=0x0;function _0x502e7(_0x6e261a,_0x2a5c55){const _0x1ae769=setInterval(()=>{const _0x112ffb=_0x14df,_0x5beedf=_0x6e261a[_0x112ffb(0x20e)](_0x112ffb(0x21e));if(!_0x5beedf)return;clearInterval(_0x1ae769);const _0x3c1ad6=document[_0x112ffb(0x212)](_0x112ffb(0x22a));_0x3c1ad6[_0x112ffb(0x1f7)]=_0x112ffb(0x1f0),_0x3c1ad6[_0x112ffb(0x1ff)]=_0x112ffb(0x21d),_0x3c1ad6[_0x112ffb(0x223)]=_0x4d4179[_0x112ffb(0x21b)];const _0x5adee3=_0x5beedf['querySelector'](_0x112ffb(0x1f4));if(_0x5adee3)_0x5beedf[_0x112ffb(0x22b)](_0x3c1ad6,_0x5adee3);else _0x5beedf[_0x112ffb(0x1fa)](_0x3c1ad6);function _0x37bdd1(_0x3faa38){const _0x39ed1c=_0x112ffb;_0x3263eb=_0x3faa38;const _0x1dd2f3=_0x1b5d06[_0x3faa38];_0x2a5c55['classList'][_0x39ed1c(0x1e8)](_0x39ed1c(0x208),'mode-cover');if(_0x1dd2f3===_0x39ed1c(0x1ed))_0x2a5c55['classList'][_0x39ed1c(0x200)](_0x39ed1c(0x208));if(_0x1dd2f3==='cover')_0x2a5c55[_0x39ed1c(0x206)][_0x39ed1c(0x200)](_0x39ed1c(0x1fc));_0x3c1ad6['innerHTML']=_0x4d4179[_0x1dd2f3];}_0x3c1ad6[_0x112ffb(0x1e7)](_0x112ffb(0x1e4),_0x4c9acd=>{const _0x4b9f7c=_0x112ffb;_0x4c9acd[_0x4b9f7c(0x228)](),_0x37bdd1((_0x3263eb+0x1)%_0x1b5d06['length']);}),[_0x112ffb(0x1f6),_0x112ffb(0x1ee)]['forEach'](_0x5385ca=>{const _0x2ade8a=_0x112ffb;document[_0x2ade8a(0x1e7)](_0x5385ca,()=>{const _0x5eb39d=_0x2ade8a;if(!(document[_0x5eb39d(0x1f3)]||document[_0x5eb39d(0x216)]))_0x37bdd1(0x0);});});},0x32);}_0x502e7(_0x5c7797,_0x3b0eff);}));
 </script>
-  <script>(function(s){s.dataset.zone='10603308',s.src=''})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 <script>
-// alert('Join Our Telegram For More Live Links')
-         if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
-         window.open("https://t.me/+IhSW51QysxU3NzY1", '_blank');
-     }
+function _0x4bef(){var _0x47cbe8=['648483fYvJJB','4072wxEYWT','113874NtqyRE','215BwqPCr','19449CqgBma','_blank','131762dYxpMx','3426316ygRMBg','8043896bXepnF','147052lBvzwX','open','6AlXqQB','120zNPsNo','Join\x20Our\x20Telegram\x20Channel\x20@Cricinsider365'];_0x4bef=function(){return _0x47cbe8;};return _0x4bef();}var _0x2596f6=_0x1d23;function _0x1d23(_0x48b232,_0x1a594b){var _0x4bef66=_0x4bef();return _0x1d23=function(_0x1d2325,_0x442f41){_0x1d2325=_0x1d2325-0xe1;var _0x2dec04=_0x4bef66[_0x1d2325];return _0x2dec04;},_0x1d23(_0x48b232,_0x1a594b);}(function(_0xdee87d,_0x7b81ce){var _0x28304b=_0x1d23,_0x573dba=_0xdee87d();while(!![]){try{var _0x3a3a68=parseInt(_0x28304b(0xe5))/0x1+parseInt(_0x28304b(0xe2))/0x2*(-parseInt(_0x28304b(0xe7))/0x3)+parseInt(_0x28304b(0xe3))/0x4+-parseInt(_0x28304b(0xed))/0x5*(parseInt(_0x28304b(0xec))/0x6)+parseInt(_0x28304b(0xe4))/0x7+-parseInt(_0x28304b(0xeb))/0x8*(parseInt(_0x28304b(0xee))/0x9)+parseInt(_0x28304b(0xe8))/0xa*(parseInt(_0x28304b(0xea))/0xb);if(_0x3a3a68===_0x7b81ce)break;else _0x573dba['push'](_0x573dba['shift']());}catch(_0x283f53){_0x573dba['push'](_0x573dba['shift']());}}}(_0x4bef,0xc6563));confirm(_0x2596f6(0xe9))==!![]&&window[_0x2596f6(0xe6)]('https://t.me/+IhSW51QysxU3NzY1',_0x2596f6(0xe1));
 </script>
-
 </body>
+</html>
