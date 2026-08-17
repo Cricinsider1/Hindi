@@ -1,258 +1,425 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TG_@Cricinsider365</title>
-<meta name="referrer" content="no-referrer">
-<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css"/>
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TG_@Cricinsider365</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Poppins:wght@400;600&display=swap');
 
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FMP9REY96D"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  gtag('config', 'G-FMP9REY96D');
-</script>
-  <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+        body {
+            background-color: #0b0c10;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            padding-bottom: 40px;
+        }
 
-.shaka-video-container{
-position:fixed;
-inset:0;
-background:#000;
-display:flex;
-align-items:center;
-justify-content:center;
-}
+        /* 1. LOADING SCREEN */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0b0c10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
 
-video{
-width:100%;
-height:100%;
-object-fit:contain;
-background:#000;
-}
+        .loading-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-transform: uppercase;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
 
-.custom-watermark{
-position:absolute;
-z-index:40;
-pointer-events:none;
-top:65%;
-left:6%;
-transform:translateY(-50%);
-font-size:11px;
-font-weight:600;
-color:rgba(255,255,255,0.12);
-}
+        .loading-subtitle {
+            font-size: 0.85rem;
+            letter-spacing: 4px;
+            color: #a9a9a9;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            animation: pulse 1.5s infinite;
+        }
 
-/* --- Updated Modern Blocker Styles --- */
-.block-overlay{
-position:fixed;
-inset:0;
-z-index:99999;
-display:flex;
-align-items:center;
-justify-content:center;
-background:radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
-text-align:center;
-}
+        .loading-bar-container {
+            width: 190px;
+            height: 4px;
+            background-color: #1f2833;
+            border-radius: 2px;
+            overflow: hidden;
+        }
 
-.block-box{
-padding:40px;
-max-width:500px;
-width:90%;
-background:rgba(20, 20, 20, 0.95);
-border-radius:16px;
-border:1px solid rgba(255, 255, 255, 0.1);
-box-shadow:0 20px 50px rgba(0,0,0,0.5);
-animation: fadeInUp 0.6s ease-out;
-}
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff003c, #ff4d00);
+            animation: load 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
 
-@keyframes fadeInUp {
-from { opacity: 0; transform: translateY(30px); }
-to { opacity: 1; transform: translateY(0); }
-}
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
 
-.block-title{
-font-size:42px;
-font-weight:800;
-color:#ffffff;
-text-transform:uppercase;
-letter-spacing:2px;
-margin-bottom:20px;
-text-shadow:0 0 10px rgba(255, 0, 0, 0.3);
-}
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
 
-.block-sub{
-font-size:14px;
-font-weight:500;
-color:rgba(255, 255, 255, 0.6);
-line-height:1.6;
-}
+        #main-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-/* Icon hidden as requested, but keeping structure if needed later */
-.block-icon{ display: none; }
-.block-note{ display: none; }
+        /* 2. LIVESTREAM PORTAL */
+        .portal-wrapper {
+            position: relative;
+            width: 100%;
+            background-color: #000000;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid #1f2833;
+        }
 
-@media(max-width:700px){
-.custom-watermark{font-size:9px;top:60%;left:16%}
-.block-title{font-size:28px}
-.block-box{padding:25px}
-.block-sub{font-size:12px}
-}
-</style>
-</head>
+        .portal-watermark-left {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.85);
+            z-index: 10;
+            text-transform: uppercase;
+        }
+
+        .portal-live-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #ff003c;
+            color: #ffffff;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 3px;
+            letter-spacing: 1px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-transform: uppercase;
+        }
+
+        .portal-live-badge::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        .portal-display {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0; /* Changed from 30px to 0 for full iframe view like Randua */
+            text-align: center;
+            z-index: 2;
+        }
+
+        .portal-text {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #a9a9a9;
+            line-height: 1.6;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 30px;
+        }
+
+        .video-player-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+        }
+
+        /* 3. BRAND BAR */
+        .brand-section {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #14171c;
+            background-color: #0c0e12;
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-subtitle-top {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.75rem;
+            color: #7a7a7a;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .brand-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .brand-desc {
+            font-size: 0.65rem;
+            color: #555c66;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .telegram-btn {
+            background: linear-gradient(135deg, #0088cc, #00a6ff);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
+        }
+
+        .telegram-icon-img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+        }
+
+        /* 4. HD TAG SUBBAR */
+        .tag-bar {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #08090c;
+            border-bottom: 1px solid #14171c;
+        }
+
+        .hd-tag {
+            background-color: rgba(255, 0, 60, 0.15);
+            color: #ff003c;
+            border: 1px solid rgba(255, 0, 60, 0.3);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .current-stream-name {
+            font-size: 0.75rem;
+            color: #8e95a0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+    </style>
+<style></style><style type="text/css">* {user-select: auto !important; -webkit-user-select: auto !important;}</style><input type="hidden" id="inject_idm_text_selection"></head>
 <body>
 
-<div class="shaka-video-container" id="player-container">
-<video id="video" autoplay muted playsinline preload="metadata"></video>
-<div class="custom-watermark"> </div>
-</div>
+    <div id="loading-screen" style="opacity: 0; visibility: hidden;">
+        <div class="loading-title">@Cricinsider365</div>
+        <div class="loading-subtitle">CONNECTING...</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
 
-<script>
-(function(){
+    <div id="main-content" style="display: block; opacity: 1; visibility: visible;">
 
-  function isSandboxedEnv(){
-    try {
-      if (window.self === window.top) return false;
-      if (window.frameElement && window.frameElement.hasAttribute("sandbox")) {
-        return true;
-      }
-      try {
-        document.domain = document.domain;
-        if (window.frameElement && !window.frameElement.getAttribute("sandbox")) {
-             return false;
+        <div class="portal-wrapper">
+            <div class="portal-watermark-left">@Cricinsider365</div>
+            <div class="portal-live-badge">LIVE •</div>
+
+            <div class="portal-display" id="portalDisplay">
+                <div class="portal-text" id="portalStatusText" style="display: none;">LOADING STREAM...</div>
+                <iframe class="video-player-frame" id="videoPlayer" src="https://sonucdn-v1.pages.dev/star?id=STEN3" allowfullscreen="" allow="autoplay; fullscreen; encrypted-media" scrolling="no" style="display: block;"></iframe>
+            </div>
+        </div>
+
+        <div class="brand-section">
+            <div class="brand-info">
+                <span class="brand-subtitle-top">OFFICIAL CHANNEL</span>
+                <div class="brand-title">@Cricinsider365</div>
+                <span class="brand-desc">FREE STREAMS • LIVE SCORES • UPDATES</span>
+            </div>
+            <a href="https://t.me/+tL4jz_00y6NlMGRl" target="_blank" class="telegram-btn">
+                <img class="telegram-icon-img" src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram">
+                JOIN TELEGRAM CHANNEL
+            </a>
+        </div>
+
+        <div class="tag-bar">
+            <div class="hd-tag">HD</div>
+            <div class="current-stream-name" id="streamLabel">Live</div>
+        </div>
+
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                const mainApp = document.getElementById('main-content');
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+                mainApp.style.display = 'block';
+                setTimeout(() => {
+                    mainApp.style.opacity = '1';
+                    mainApp.style.visibility = 'visible';
+                }, 50);
+            }, 2200);
+        });
+
+        // ---------- STREAM ID (JSON) LOGIC ----------
+        const JSON_SOURCE_URL_PRIMARY = 'https://allrounderid2.pages.dev/id.json';
+        const JSON_SOURCE_URL_SECONDARY = '';
+
+        function getStreamIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('stream');
         }
-      } catch (e) {
-         return true;
-      }
-      return false;
-    } catch(e) {
-      return true;
-    }
-  }
-  function triggerBlockScreen(title, message){
-    const container = document.getElementById("player-container");
-    const video = document.getElementById("video");
 
-    try {
-      video.pause();
-      video.removeAttribute('src');
-      video.load();
-    } catch(e){}
+        function playFromStreamData(item) {
+            const statusText = document.getElementById('portalStatusText');
+            const player = document.getElementById('videoPlayer');
+            const streamLabel = document.getElementById('streamLabel');
 
-    const overlay = document.createElement("div");
-    overlay.className = "block-overlay";
-    overlay.id = "sandbox-block-display";
-    overlay.innerHTML = `
-      <div class="block-box">
-        <div class="block-title">${title}</div>
-        <div class="block-sub">${message}</div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
-    container.style.display = 'none';
-  }
-  if(isSandboxedEnv()){
+            if (item && item.iframeSrc && item.iframeSrc.trim() !== "") {
+                statusText.style.display = 'none';
+                player.style.display = 'block';
+                player.src = item.iframeSrc;
+                streamLabel.innerText = item.name || item.id;
 
-    triggerBlockScreen('Disable Sandbox', 'Opening Chrome Browser Only & Disable Ad blocker');
-    return;
-  }
-  const CONFIG={
-    streamUrl:"https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_3_MOB/WDVLive/index.mpd",
-    keyId:"68318f7c97c55ba6ab8d0398a88fed3e",
-    key:"d312fb3325b4eb9462b4a0d2b6794adf",
-    cookieUrl:""
-  };
-
-  document.addEventListener("DOMContentLoaded",async()=>{
-
-    shaka.polyfill.installAll();
-    if(!shaka.Player.isBrowserSupported()) return;
-
-    const video=document.getElementById("video");
-    const container=document.getElementById("player-container");
-
-    video.muted=true;
-
-    const player=new shaka.Player();
-    await player.attach(video);
-
-    const ui=new shaka.ui.Overlay(player,container,video);
-
-    ui.configure({
-  addBigPlayButton: true,
-  controlPanelElements: [
-    "mute",           // First - volume/mute button
-    "play_pause",     // Second - play/pause button  
-    "time_and_duration", // Third - timeline timings (00:00 / 00:00)
-    "spacer",
-    "quality",
-    "picture_in_picture",
-    "fullscreen"
-  ],
-  seekBarColors: {
-    base: "white",
-    buffered: "red", 
-    played: "green"
-  }
-});
-
-    player.configure({
-      drm:{clearKeys:{[CONFIG.keyId]:CONFIG.key}},
-      manifest:{defaultPresentationDelay:5},
-      streaming:{
-        lowLatencyMode:true,
-        bufferingGoal:10,
-        rebufferingGoal:2,
-        safeSeekOffset:5
-      }
-    });
-
-    let cookieValue="__hdnea__=st=1786872716~exp=1786894316~acl=/*~hmac=fc7d187536a6a0d6d468204b45fe98448ecdaa87359881ced5735d8cb0be1cc9";
-
-    try{
-      const response=await fetch(CONFIG.cookieUrl,{cache:"no-store"});
-      const data=await response.json();
-      cookieValue=data.cookie||"";
-    }catch(e){}
-
-    if(cookieValue){
-      player.getNetworkingEngine().registerRequestFilter((type,request)=>{
-
-        let urlCookie=cookieValue.startsWith("__hdnea__=")?cookieValue.substring(10):cookieValue;
-
-        if((type===shaka.net.NetworkingEngine.RequestType.MANIFEST||
-        type===shaka.net.NetworkingEngine.RequestType.SEGMENT)&&
-        !request.uris[0].includes("__hdnea__")){
-          const sep=request.uris[0].includes("?")?"&":"?";
-          request.uris[0]+=sep+"__hdnea__="+urlCookie;
+                // optional hit counter ping (fire and forget, ignore failures)
+                if (item.hit) {
+                    fetch(item.hit).catch(() => {});
+                }
+            } else {
+                player.style.display = 'none';
+                player.src = "";
+                statusText.style.display = 'block';
+                statusText.innerHTML = "STREAM NOT FOUND<br>SELECT AN AVAILABLE OPTION";
+                streamLabel.innerText = "INVALID STREAM ID";
+            }
         }
-      });
-    }
 
-    try{
-      await player.load(CONFIG.streamUrl);
-      video.play().catch(()=>{});
-    }catch(e){}
+        async function loadStreamFromId() {
+            let streamId = getStreamIdFromUrl();
+            if (!streamId) return; // nothing to do, default UI stays
 
-    video.addEventListener("play",()=>{
-      video.muted=false;
-    });
+            // prefix-based source resolution: "a:" -> secondary source (eerajson)
+            let sourceUrl = JSON_SOURCE_URL_PRIMARY;
+            if (streamId.toLowerCase().startsWith('a:')) {
+                sourceUrl = JSON_SOURCE_URL_SECONDARY;
+                streamId = streamId.slice(2); // strip the "a:" prefix before matching
+            }
 
-  });
-})();
-</script>
-  <script>(function(s){s.dataset.zone='10603308',s.src=''})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+            const statusText = document.getElementById('portalStatusText');
+            const streamLabel = document.getElementById('streamLabel');
+            statusText.innerHTML = "LOADING STREAM...";
+            streamLabel.innerText = "LOADING...";
+
+            try {
+                const res = await fetch(sourceUrl, { cache: 'no-store' });
+                if (!res.ok) throw new Error('Bad response');
+                const data = await res.json();
+
+                let match = null;
+                if (sourceUrl === JSON_SOURCE_URL_SECONDARY) {
+                    // secondary source is a flat { key: "streamUrl" } object
+                    const foundKey = Object.keys(data).find(k => k.toLowerCase() === streamId.toLowerCase());
+                    if (foundKey) {
+                        match = { id: foundKey, name: foundKey, iframeSrc: data[foundKey] };
+                    }
+                } else {
+                    // primary source is { iframes: [ { id, iframeSrc, name }, ... ] }
+                    const list = data.iframes || [];
+                    match = list.find(it => it.id === streamId);
+                }
+
+                if (match) {
+                    playFromStreamData(match);
+                } else {
+                    statusText.style.display = 'block';
+                    statusText.innerHTML = "STREAM NOT FOUND<br>CHECK THE LINK AND TRY AGAIN";
+                    streamLabel.innerText = "INVALID STREAM ID";
+                }
+            } catch (err) {
+                statusText.style.display = 'block';
+                statusText.innerHTML = "FAILED TO LOAD STREAM DATA<br>PLEASE TRY AGAIN LATER";
+                streamLabel.innerText = "ERROR";
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStreamFromId();
+        });
+    </script>
+
+
+</body></html>
 <script>
 // alert('Join Our Telegram For More Live Links')
          if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
          window.open("https://t.me/+IhSW51QysxU3NzY1", '_blank');
      }
 </script>
-
-</body>
