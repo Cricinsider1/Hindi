@@ -1,426 +1,115 @@
-<!DOCTYPE html><html lang="en"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TG_@Cricinsider365</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TG_@Cricinsider365</title>
 <script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Poppins:wght@400;600&display=swap');
+<meta name="referrer" content="no-referrer">
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
 
-        body {
-            background-color: #0b0c10;
-            color: #ffffff;
-            font-family: 'Poppins', sans-serif;
-            overflow-x: hidden;
-            padding-bottom: 40px;
-        }
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
 
-        /* 1. LOADING SCREEN */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #0b0c10;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
+.shaka-video-container{
+position:fixed;
+inset:0;
+background:#000;
+display:flex;
+align-items:center;
+justify-content:center;
+}
 
-        .loading-title {
-            font-family: 'Oswald', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: #ffffff;
-            text-transform: uppercase;
-            line-height: 1.2;
-            margin-bottom: 5px;
-        }
+video{
+width:100%;
+height:100%;
+object-fit:contain;
+background:#000;
+}
 
-        .loading-subtitle {
-            font-size: 0.85rem;
-            letter-spacing: 4px;
-            color: #a9a9a9;
-            text-transform: uppercase;
-            margin-bottom: 25px;
-            animation: pulse 1.5s infinite;
-        }
+.custom-watermark{
+position:absolute;
+z-index:40;
+pointer-events:none;
+top:65%;
+left:6%;
+transform:translateY(-50%);
+font-size:11px;
+font-weight:600;
+color:rgba(255,255,255,0.12);
+}
 
-        .loading-bar-container {
-            width: 190px;
-            height: 4px;
-            background-color: #1f2833;
-            border-radius: 2px;
-            overflow: hidden;
-        }
+.block-overlay{
+position:fixed;
+inset:0;
+z-index:99999;
+display:flex;
+align-items:center;
+justify-content:center;
+background:radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+text-align:center;
+}
 
-        .loading-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #ff003c, #ff4d00);
-            animation: load 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
+.block-box{
+padding:40px;
+max-width:500px;
+width:90%;
+background:rgba(20, 20, 20, 0.95);
+border-radius:16px;
+border:1px solid rgba(255, 255, 255, 0.1);
+box-shadow:0 20px 50px rgba(0,0,0,0.5);
+animation: fadeInUp 0.6s ease-out;
+}
 
-        @keyframes load {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
+@keyframes fadeInUp {
+from { opacity: 0; transform: translateY(30px); }
+to { opacity: 1; transform: translateY(0); }
+}
 
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
+.block-title{
+font-size:42px;
+font-weight:800;
+color:#ffffff;
+text-transform:uppercase;
+letter-spacing:2px;
+margin-bottom:20px;
+}
 
-        #main-content {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+.block-sub{
+font-size:14px;
+color:rgba(255,255,255,0.6);
+line-height:1.6;
+}
 
-        /* 2. LIVESTREAM PORTAL */
-        .portal-wrapper {
-            position: relative;
-            width: 100%;
-            background-color: #000000;
-            aspect-ratio: 16 / 9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-bottom: 2px solid #1f2833;
-        }
+@media(max-width:700px){
+.custom-watermark{font-size:9px;top:60%;left:16%}
+.block-title{font-size:28px}
+.block-box{padding:25px}
+.block-sub{font-size:12px}
+}
+</style>
 
-        .portal-watermark-left {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            font-family: 'Oswald', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: 1.5px;
-            color: rgba(255, 255, 255, 0.85);
-            z-index: 10;
-            text-transform: uppercase;
-        }
 
-        .portal-live-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: #ff003c;
-            color: #ffffff;
-            font-family: 'Oswald', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 3px;
-            letter-spacing: 1px;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            text-transform: uppercase;
-        }
 
-        .portal-live-badge::before {
-            content: '';
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background-color: #ffffff;
-            border-radius: 50%;
-            animation: blink 1s infinite;
-        }
+</head>
 
-        .portal-display {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0; /* Changed from 30px to 0 for full iframe view like Randua */
-            text-align: center;
-            z-index: 2;
-        }
-
-        .portal-text {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.15rem;
-            font-weight: 400;
-            color: #a9a9a9;
-            line-height: 1.6;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 30px;
-        }
-
-        .video-player-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: none;
-        }
-
-        /* 3. BRAND BAR */
-        .brand-section {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #14171c;
-            background-color: #0c0e12;
-        }
-
-        .brand-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .brand-subtitle-top {
-            font-family: 'Oswald', sans-serif;
-            font-size: 0.75rem;
-            color: #7a7a7a;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-
-        .brand-title {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #ffffff;
-            text-transform: uppercase;
-            line-height: 1.1;
-        }
-
-        .brand-desc {
-            font-size: 0.65rem;
-            color: #555c66;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        .telegram-btn {
-            background: linear-gradient(135deg, #0088cc, #00a6ff);
-            color: #ffffff;
-            text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
-        }
-
-        .telegram-icon-img {
-            width: 18px;
-            height: 18px;
-            object-fit: contain;
-        }
-
-        /* 4. HD TAG SUBBAR */
-        .tag-bar {
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background-color: #08090c;
-            border-bottom: 1px solid #14171c;
-        }
-
-        .hd-tag {
-            background-color: rgba(255, 0, 60, 0.15);
-            color: #ff003c;
-            border: 1px solid rgba(255, 0, 60, 0.3);
-            font-size: 0.65rem;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 4px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .current-stream-name {
-            font-size: 0.75rem;
-            color: #8e95a0;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-    </style>
-<style></style><style type="text/css">* {user-select: auto !important; -webkit-user-select: auto !important;}</style><input type="hidden" id="inject_idm_text_selection"></head>
 <body>
 
-    <div id="loading-screen" style="opacity: 0; visibility: hidden;">
-        <div class="loading-title">@Cricinsider365</div>
-        <div class="loading-subtitle">CONNECTING...</div>
-        <div class="loading-bar-container">
-            <div class="loading-bar"></div>
-        </div>
-    </div>
+<div class="shaka-video-container shaka-mobile" id="player-container" shaka-controls="true">
 
-    <div id="main-content" style="display: block; opacity: 1; visibility: visible;">
+  <video id="video" autoplay muted playsinline preload="metadata" class="shaka-video"></video>
 
-        <div class="portal-wrapper">
-            <div class="portal-watermark-left">@Cricinsider365</div>
-            <div class="portal-live-badge">LIVE •</div>
+  <div class="custom-watermark"></div>
 
-            <div class="portal-display" id="portalDisplay">
-                <div class="portal-text" id="portalStatusText" style="display: none;">LOADING STREAM...</div>
-                <iframe class="video-player-frame" id="videoPlayer" src="https://sonucdn-v2.pages.dev/star?id=STEN3HD" allowfullscreen="" allow="autoplay; fullscreen; encrypted-media" scrolling="no" style="display: block;"></iframe>
-            </div>
-        </div>
+</div>
 
-        <div class="brand-section">
-            <div class="brand-info">
-                <span class="brand-subtitle-top">OFFICIAL CHANNEL</span>
-                <div class="brand-title">@Cricinsider365</div>
-                <span class="brand-desc">FREE STREAMS • LIVE SCORES • UPDATES</span>
-            </div>
-            <a href="https://t.me/+tL4jz_00y6NlMGRl" target="_blank" class="telegram-btn">
-                <img class="telegram-icon-img" src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram">
-                JOIN TELEGRAM CHANNEL
-            </a>
-        </div>
-
-        <div class="tag-bar">
-            <div class="hd-tag">HD</div>
-            <div class="current-stream-name" id="streamLabel">Live</div>
-        </div>
-
-    </div>
-
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loading-screen');
-                const mainApp = document.getElementById('main-content');
-                loader.style.opacity = '0';
-                loader.style.visibility = 'hidden';
-                mainApp.style.display = 'block';
-                setTimeout(() => {
-                    mainApp.style.opacity = '1';
-                    mainApp.style.visibility = 'visible';
-                }, 50);
-            }, 2200);
-        });
-
-        // ---------- STREAM ID (JSON) LOGIC ----------
-        const JSON_SOURCE_URL_PRIMARY = 'https://allrounderid2.pages.dev/id.json';
-        const JSON_SOURCE_URL_SECONDARY = '';
-
-        function getStreamIdFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('stream');
-        }
-
-        function playFromStreamData(item) {
-            const statusText = document.getElementById('portalStatusText');
-            const player = document.getElementById('videoPlayer');
-            const streamLabel = document.getElementById('streamLabel');
-
-            if (item && item.iframeSrc && item.iframeSrc.trim() !== "") {
-                statusText.style.display = 'none';
-                player.style.display = 'block';
-                player.src = item.iframeSrc;
-                streamLabel.innerText = item.name || item.id;
-
-                // optional hit counter ping (fire and forget, ignore failures)
-                if (item.hit) {
-                    fetch(item.hit).catch(() => {});
-                }
-            } else {
-                player.style.display = 'none';
-                player.src = "";
-                statusText.style.display = 'block';
-                statusText.innerHTML = "STREAM NOT FOUND<br>SELECT AN AVAILABLE OPTION";
-                streamLabel.innerText = "INVALID STREAM ID";
-            }
-        }
-
-        async function loadStreamFromId() {
-            let streamId = getStreamIdFromUrl();
-            if (!streamId) return; // nothing to do, default UI stays
-
-            // prefix-based source resolution: "a:" -> secondary source (eerajson)
-            let sourceUrl = JSON_SOURCE_URL_PRIMARY;
-            if (streamId.toLowerCase().startsWith('a:')) {
-                sourceUrl = JSON_SOURCE_URL_SECONDARY;
-                streamId = streamId.slice(2); // strip the "a:" prefix before matching
-            }
-
-            const statusText = document.getElementById('portalStatusText');
-            const streamLabel = document.getElementById('streamLabel');
-            statusText.innerHTML = "LOADING STREAM...";
-            streamLabel.innerText = "LOADING...";
-
-            try {
-                const res = await fetch(sourceUrl, { cache: 'no-store' });
-                if (!res.ok) throw new Error('Bad response');
-                const data = await res.json();
-
-                let match = null;
-                if (sourceUrl === JSON_SOURCE_URL_SECONDARY) {
-                    // secondary source is a flat { key: "streamUrl" } object
-                    const foundKey = Object.keys(data).find(k => k.toLowerCase() === streamId.toLowerCase());
-                    if (foundKey) {
-                        match = { id: foundKey, name: foundKey, iframeSrc: data[foundKey] };
-                    }
-                } else {
-                    // primary source is { iframes: [ { id, iframeSrc, name }, ... ] }
-                    const list = data.iframes || [];
-                    match = list.find(it => it.id === streamId);
-                }
-
-                if (match) {
-                    playFromStreamData(match);
-                } else {
-                    statusText.style.display = 'block';
-                    statusText.innerHTML = "STREAM NOT FOUND<br>CHECK THE LINK AND TRY AGAIN";
-                    streamLabel.innerText = "INVALID STREAM ID";
-                }
-            } catch (err) {
-                statusText.style.display = 'block';
-                statusText.innerHTML = "FAILED TO LOAD STREAM DATA<br>PLEASE TRY AGAIN LATER";
-                streamLabel.innerText = "ERROR";
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            loadStreamFromId();
-        });
-    </script>
-
-
-</body></html>
 <script>
-// alert('Join Our Telegram For More Live Links')
-         if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
-         window.open("https://t.me/+IhSW51QysxU3NzY1", '_blank');
-     }
+const _0x343961=_0x2e21;function _0xacb7(){const _0x3f4260=['div','configure','Opening\x20Chrome\x20Browser\x20Only\x20&\x20Disable\x20Ad\x20blocker','4314jscEXf','getNetworkingEngine','fullscreen','className','2765USgYOw','68318f7c97c55ba6ab8d0398a88fed3e','player-container','self','addEventListener','__hdnea__=','play_pause','14766433KNpqsY','isBrowserSupported','2FJwAnF','quality','147306cjulUH','26974776lYkvBF','createElement','installAll','d312fb3325b4eb9462b4a0d2b6794adf','src','net','video','polyfill','registerRequestFilter','time_and_duration','Disable\x20Sandbox','Referer','15966qZxtuD','Cookie','json','3715JCzWDe','970qwEOYi','style','headers','none','red','display','load','RequestType','startsWith','uris','NetworkingEngine','key','getElementById','https://t.me/+IhSW51QysxU3NzY1','User-Agent','includes','attach','pause','domain','44ryLmTd','\x0a\x20\x20\x20\x20\x20\x20<div\x20class=\x22block-box\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22block-title\x22>','location','spacer','play','sandbox','top','Player','https://www.jiotv.com/','https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_3_MOB/WDVLive/index.mpd','href','cookieUrl','SEGMENT','muted','frameElement','Join\x20Our\x20Telegram\x20Channel\x20@Cricinsider365','184AWrNJW','catch','217791oQXdep','</div>\x0a\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20','hasAttribute','MANIFEST','cookie'];_0xacb7=function(){return _0x3f4260;};return _0xacb7();}(function(_0x3bd2bd,_0x196a25){const _0x362e61=_0x2e21,_0x530234=_0x3bd2bd();while(!![]){try{const _0x179b33=-parseInt(_0x362e61(0xf7))/0x1*(parseInt(_0x362e61(0x100))/0x2)+-parseInt(_0x362e61(0x102))/0x3*(parseInt(_0x362e61(0x126))/0x4)+-parseInt(_0x362e61(0x112))/0x5*(parseInt(_0x362e61(0xf3))/0x6)+-parseInt(_0x362e61(0xeb))/0x7*(-parseInt(_0x362e61(0xe9))/0x8)+-parseInt(_0x362e61(0x10f))/0x9*(-parseInt(_0x362e61(0x113))/0xa)+-parseInt(_0x362e61(0xfe))/0xb+parseInt(_0x362e61(0x103))/0xc;if(_0x179b33===_0x196a25)break;else _0x530234['push'](_0x530234['shift']());}catch(_0x429d40){_0x530234['push'](_0x530234['shift']());}}}(_0xacb7,0xaed24));confirm(_0x343961(0xe8))&&(window[_0x343961(0xdb)][_0x343961(0xe3)]=_0x343961(0x120));function _0x2e21(_0x46cc75,_0x423cda){const _0xacb7d9=_0xacb7();return _0x2e21=function(_0x2e2145,_0x3780f6){_0x2e2145=_0x2e2145-0xdb;let _0xc81a36=_0xacb7d9[_0x2e2145];return _0xc81a36;},_0x2e21(_0x46cc75,_0x423cda);}(function(){const _0x1d5c90=_0x343961;function _0x242a86(){const _0x497abb=_0x2e21;try{if(window[_0x497abb(0xfa)]===window[_0x497abb(0xdf)])return![];if(window[_0x497abb(0xe7)]&&window['frameElement'][_0x497abb(0xed)](_0x497abb(0xde)))return!![];try{document[_0x497abb(0x125)]=document[_0x497abb(0x125)];}catch(_0x50b06b){return!![];}return![];}catch(_0x124267){return!![];}}function _0x2542ff(_0x5726e4,_0x50dee6){const _0x5027c8=_0x2e21,_0x343458=document[_0x5027c8(0x11f)](_0x5027c8(0xf9)),_0x51cfda=document[_0x5027c8(0x11f)](_0x5027c8(0x109));try{_0x51cfda[_0x5027c8(0x124)](),_0x51cfda['removeAttribute'](_0x5027c8(0x107)),_0x51cfda[_0x5027c8(0x119)]();}catch(_0x606518){}const _0x46adfe=document[_0x5027c8(0x104)](_0x5027c8(0xf0));_0x46adfe[_0x5027c8(0xf6)]='block-overlay',_0x46adfe['innerHTML']=_0x5027c8(0x127)+_0x5726e4+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22block-sub\x22>'+_0x50dee6+_0x5027c8(0xec),document['body']['appendChild'](_0x46adfe),_0x343458[_0x5027c8(0x114)][_0x5027c8(0x118)]=_0x5027c8(0x116);}if(_0x242a86()){_0x2542ff(_0x1d5c90(0x10d),_0x1d5c90(0xf2));return;}const _0x47ed22={'streamUrl':_0x1d5c90(0xe2),'keyId':_0x1d5c90(0xf8),'key':_0x1d5c90(0x106),'cookieUrl':'https://allrounder2-0.pages.dev/api/Sony-3.json'};document['addEventListener']('DOMContentLoaded',async()=>{const _0x42843d=_0x1d5c90;shaka[_0x42843d(0x10a)][_0x42843d(0x105)]();if(!shaka[_0x42843d(0xe0)][_0x42843d(0xff)]())return;const _0x5ece1e=document['getElementById']('video'),_0x41b23e=document[_0x42843d(0x11f)](_0x42843d(0xf9));_0x5ece1e['muted']=!![];const _0xaab01f=new shaka['Player']();await _0xaab01f[_0x42843d(0x123)](_0x5ece1e);const _0x377a4e=new shaka['ui']['Overlay'](_0xaab01f,_0x41b23e,_0x5ece1e);_0x377a4e[_0x42843d(0xf1)]({'addBigPlayButton':!![],'controlPanelElements':['mute',_0x42843d(0xfd),_0x42843d(0x10c),_0x42843d(0xdc),_0x42843d(0x101),'picture_in_picture',_0x42843d(0xf5)],'seekBarColors':{'base':'white','buffered':_0x42843d(0x117),'played':'green'}}),_0xaab01f[_0x42843d(0xf1)]({'drm':{'clearKeys':{[_0x47ed22['keyId']]:_0x47ed22[_0x42843d(0x11e)]}},'manifest':{'defaultPresentationDelay':0x5},'streaming':{'lowLatencyMode':!![],'bufferingGoal':0xa,'rebufferingGoal':0x2,'safeSeekOffset':0x5}});let _0x47fb47='';try{const _0x26bf55=await fetch(_0x47ed22[_0x42843d(0xe4)],{'cache':'no-store'}),_0x3c72e7=await _0x26bf55[_0x42843d(0x111)]();_0x47fb47=_0x3c72e7[_0x42843d(0xef)]||'';}catch(_0x2ec1a7){}_0x47fb47&&_0xaab01f[_0x42843d(0xf4)]()[_0x42843d(0x10b)]((_0x93fe26,_0xd2e9b5)=>{const _0x2b83dd=_0x42843d;_0xd2e9b5[_0x2b83dd(0x115)][_0x2b83dd(0x10e)]=_0x2b83dd(0xe1),_0xd2e9b5[_0x2b83dd(0x115)][_0x2b83dd(0x121)]='plaYtv/7.1.5\x20(Linux;Android\x2013)\x20ExoPlayerLib/2.11.6',_0xd2e9b5[_0x2b83dd(0x115)][_0x2b83dd(0x110)]=_0x47fb47;let _0x280202=_0x47fb47[_0x2b83dd(0x11b)](_0x2b83dd(0xfc))?_0x47fb47['substring'](0xa):_0x47fb47;if((_0x93fe26===shaka[_0x2b83dd(0x108)]['NetworkingEngine'][_0x2b83dd(0x11a)][_0x2b83dd(0xee)]||_0x93fe26===shaka[_0x2b83dd(0x108)][_0x2b83dd(0x11d)][_0x2b83dd(0x11a)][_0x2b83dd(0xe5)])&&!_0xd2e9b5[_0x2b83dd(0x11c)][0x0][_0x2b83dd(0x122)]('__hdnea__')){const _0x396501=_0xd2e9b5['uris'][0x0][_0x2b83dd(0x122)]('?')?'&':'?';_0xd2e9b5['uris'][0x0]+=_0x396501+'__hdnea__='+_0x280202;}});try{await _0xaab01f[_0x42843d(0x119)](_0x47ed22['streamUrl']),_0x5ece1e[_0x42843d(0xdd)]()[_0x42843d(0xea)](()=>{});}catch(_0x2d837a){}_0x5ece1e[_0x42843d(0xfb)](_0x42843d(0xdd),()=>{const _0x594782=_0x42843d;_0x5ece1e[_0x594782(0xe6)]=![];});});}());
 </script>
+
+</body>
+</html>
