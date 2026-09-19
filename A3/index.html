@@ -1,717 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TG_@Cricinsider365</title>
 <script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<meta name="referrer" content="no-referrer">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.3.4/dist/controls.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
 
-:root {
-    --bg-color: #070b1a;
-    --primary-red: #4f46e5;
-    --primary-red-dark: #9333ea;
-    --card-bg: #0f172a;
-    --text-light: #e2e8f0;
-    --text-muted: #94a3b8;
-    --border-color: #1e293b;
+.shaka-video-container{
+position:fixed;
+inset:0;
+background:#000;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+video{
+width:100%;
+height:100%;
+object-fit:contain;
+background:#000;
 }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-light);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    min-height: 100vh;
-    padding: 1rem;
+.custom-watermark{
+position:absolute;
+z-index:40;
+pointer-events:none;
+top:65%;
+left:6%;
+transform:translateY(-50%);
+font-size:11px;
+font-weight:600;
+color:rgba(255,255,255,0.12);
 }
 
-.container {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-
-    animation: fadeIn 0.5s ease-out forwards;
+.block-overlay{
+position:fixed;
+inset:0;
+z-index:99999;
+display:flex;
+align-items:center;
+justify-content:center;
+background:radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+text-align:center;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.block-box{
+padding:40px;
+max-width:500px;
+width:90%;
+background:rgba(20, 20, 20, 0.95);
+border-radius:16px;
+border:1px solid rgba(255, 255, 255, 0.1);
+box-shadow:0 20px 50px rgba(0,0,0,0.5);
+animation: fadeInUp 0.6s ease-out;
 }
 
-
-/* =========================
-   EARN REWARD HEADER
-========================= */
-
-.reward-header {
-    width: 100%;
-    min-height: 115px;
-
-    padding: 18px 28px;
-
-    display: flex;
-    align-items: center;
-    gap: 25px;
-
-    border-radius: 28px;
-
-    background: linear-gradient(
-        100deg,
-        #ff9200 0%,
-        #ffad00 45%,
-        #ffd21a 100%
-    );
-
-    border: 2px solid rgba(255, 220, 80, 0.8);
-
-    box-shadow:
-        0 0 12px rgba(255, 190, 0, 0.8),
-        0 0 30px rgba(255, 200, 0, 0.55),
-        0 0 60px rgba(255, 190, 0, 0.3);
-
-    cursor: pointer;
-
-    margin-bottom: 1rem;
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-
-    overflow: hidden;
+@keyframes fadeInUp {
+from { opacity: 0; transform: translateY(30px); }
+to { opacity: 1; transform: translateY(0); }
 }
 
-.reward-header:hover {
-    transform: scale(1.01);
-
-    box-shadow:
-        0 0 18px rgba(255, 210, 0, 1),
-        0 0 40px rgba(255, 200, 0, 0.7),
-        0 0 75px rgba(255, 190, 0, 0.4);
+.block-title{
+font-size:42px;
+font-weight:800;
+color:#ffffff;
+text-transform:uppercase;
+letter-spacing:2px;
+margin-bottom:20px;
 }
 
-
-/* =========================
-   GOLD COIN
-========================= */
-
-.reward-coin {
-    width: 75px;
-    height: 75px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    font-size: 43px;
-    font-weight: 800;
-
-    color: #6b3d00;
-
-    background:
-        radial-gradient(
-            circle at 35% 30%,
-            #fff3a0 0%,
-            #ffd52e 25%,
-            #ffb300 60%,
-            #d98200 100%
-        );
-
-    border: 5px solid #e39a00;
-
-    box-shadow:
-        inset 0 3px 5px rgba(255,255,255,0.7),
-        inset 0 -5px 8px rgba(120,60,0,0.35),
-        0 4px 8px rgba(100,50,0,0.35),
-        0 0 15px rgba(255,230,80,0.8);
-
-    text-shadow:
-        1px 2px 2px rgba(255,255,255,0.35);
-
-    animation: coinGlow 1.5s infinite alternate;
+.block-sub{
+font-size:14px;
+color:rgba(255,255,255,0.6);
+line-height:1.6;
 }
 
-@keyframes coinGlow {
-
-    from {
-        box-shadow:
-            inset 0 3px 5px rgba(255,255,255,0.7),
-            inset 0 -5px 8px rgba(120,60,0,0.35),
-            0 4px 8px rgba(100,50,0,0.35),
-            0 0 10px rgba(255,230,80,0.6);
-    }
-
-    to {
-        box-shadow:
-            inset 0 3px 5px rgba(255,255,255,0.7),
-            inset 0 -5px 8px rgba(120,60,0,0.35),
-            0 4px 8px rgba(100,50,0,0.35),
-            0 0 25px rgba(255,240,100,1);
-    }
+@media(max-width:700px){
+.custom-watermark{font-size:9px;top:60%;left:16%}
+.block-title{font-size:28px}
+.block-box{padding:25px}
+.block-sub{font-size:12px}
 }
-
-
-/* =========================
-   REWARD TEXT
-========================= */
-
-.reward-text {
-    flex: 1;
-}
-
-.reward-title {
-    font-size: 2rem;
-
-    line-height: 1.1;
-
-    font-weight: 800;
-
-    letter-spacing: 0.5px;
-
-    color: #210d00;
-
-    text-shadow:
-        1px 2px 1px rgba(255,255,255,0.15);
-}
-
-.reward-subtitle {
-    margin-top: 7px;
-
-    font-size: 1.35rem;
-
-    font-weight: 500;
-
-    color: #6b3d00;
-}
-
-.reward-subtitle span {
-    font-size: 1rem;
-    margin-left: 3px;
-}
-
-
-/* =========================
-   RIGHT ARROW
-========================= */
-
-.reward-arrow {
-    font-size: 4rem;
-
-    line-height: 1;
-
-    font-weight: 300;
-
-    color: #795000;
-
-    text-shadow:
-        0 2px 3px rgba(255,255,255,0.2);
-
-    padding-right: 5px;
-
-    animation: arrowMove 1s infinite alternate;
-}
-
-@keyframes arrowMove {
-
-    from {
-        transform: translateX(0);
-    }
-
-    to {
-        transform: translateX(6px);
-    }
-}
-
-
-/* =========================
-   PLAYER
-========================= */
-
-#player-container {
-    width: 100%;
-
-    aspect-ratio: 16/9;
-
-    max-height: 70vh;
-
-    background-color: #000;
-
-    border-radius: 12px;
-
-    overflow: hidden;
-
-    box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.5);
-}
-
-
-/* =========================
-   INFO CARD
-========================= */
-
-.info-card {
-    background-color: var(--card-bg);
-
-    border: 1px solid var(--border-color);
-
-    border-radius: 12px;
-
-    padding: 1.25rem;
-
-    margin-top: 1rem;
-
-    text-align: center;
-}
-
-.info-card h2 {
-    font-size: 1rem;
-
-    font-weight: 600;
-
-    margin-bottom: 1rem;
-
-    color: var(--text-muted);
-}
-
-
-/* =========================
-   ACTION BUTTON
-========================= */
-
-.action-button {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 0.75rem;
-
-    width: 100%;
-
-    padding: 0.8rem 1rem;
-
-    border-radius: 8px;
-
-    background:
-        linear-gradient(
-            90deg,
-            var(--primary-red),
-            var(--primary-red-dark)
-        );
-
-    color: white;
-
-    font-weight: 600;
-
-    text-decoration: none;
-
-    border: none;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
-}
-
-.action-button:hover {
-    transform: translateY(-2px);
-}
-
-.action-button.copied {
-    background:
-        linear-gradient(
-            90deg,
-            #22c55e,
-            #4ade80
-        );
-}
-
-
-/* =========================
-   BACK LINK
-========================= */
-
-.back-link {
-    display: block;
-
-    text-align: center;
-
-    margin-top: 1.5rem;
-
-    color: var(--text-muted);
-
-    text-decoration: none;
-
-    padding: 0.5rem;
-
-    border-radius: 8px;
-}
-
-.back-link:hover {
-    background-color: var(--card-bg);
-
-    color: var(--text-light);
-}
-
-
-/* =========================
-   TELEGRAM POPUP
-========================= */
-
-.telegram-popup {
-    position: fixed;
-
-    inset: 0;
-
-    margin: auto;
-
-    width: 90%;
-
-    max-width: 400px;
-
-    height: fit-content;
-
-    background: #0f172a;
-
-    padding: 30px 20px;
-
-    border-radius: 16px;
-
-    box-shadow:
-        0 0 40px rgba(79, 70, 229, 0.6);
-
-    text-align: center;
-
-    display: none;
-
-    z-index: 10000;
-}
-
-.telegram-popup h2 {
-    color: var(--primary-red);
-
-    margin-bottom: 1rem;
-}
-
-.telegram-popup button {
-    width: 100%;
-
-    padding: 12px;
-
-    margin-top: 10px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    cursor: pointer;
-
-    font-weight: 600;
-}
-
-.join-btn {
-    background:
-        linear-gradient(
-            90deg,
-            var(--primary-red),
-            var(--primary-red-dark)
-        );
-
-    color: white;
-}
-
-.joined-btn {
-    background: var(--border-color);
-
-    color: white;
-}
-
-
-/* =========================
-   MOBILE RESPONSIVE
-========================= */
-
-@media (max-width: 600px) {
-
-    .reward-header {
-        min-height: 95px;
-
-        padding: 13px 16px;
-
-        gap: 15px;
-
-        border-radius: 22px;
-    }
-
-    .reward-coin {
-        width: 60px;
-        height: 60px;
-
-        font-size: 34px;
-
-        border-width: 4px;
-    }
-
-    .reward-title {
-        font-size: 1.35rem;
-    }
-
-    .reward-subtitle {
-        font-size: 0.95rem;
-
-        margin-top: 4px;
-    }
-
-    .reward-arrow {
-        font-size: 3rem;
-    }
-}
-
 </style>
-</head>
 
+
+
+</head>
 
 <body>
 
-<main class="container">
-
-<div id="stream-content">
-
-
-<!-- =========================
-     EARN REWARD HEADER
-========================= -->
-
-<div class="reward-header" onclick="window.location.href='https://www.profitableratecpmnetwork.com/dwt1p2wyii?key=4981da3909171c77962d25584aabaaef'">
-
-    <div class="reward-coin">
-        $
-    </div>
-
-    <div class="reward-text">
-
-        <div class="reward-title">
-            EARN REWARD
-        </div>
-
-        <div class="reward-subtitle">
-            Tap to Claim <span>►</span>
-        </div>
-
-    </div>
-
-    <div class="reward-arrow">
-        →
-    </div>
+<div class="shaka-video-container shaka-mobile" id="player-container" shaka-controls="true">
+  
+  <video id="video" autoplay muted playsinline preload="metadata" class="shaka-video"></video>
+  
+  <div class="custom-watermark"></div>
 
 </div>
-
-
-<!-- =========================
-     VIDEO PLAYER
-========================= -->
-
-<div id="player-container">
-
-    <iframe
-        src="https://sonucdn-v2.pages.dev/star?id=STEN5"
-        style="width:100%; height:100%; border:0;"
-        allow="encrypted-media; autoplay"
-        allowfullscreen>
-    </iframe>
-
-</div>
-
-
-<!-- =========================
-     TELEGRAM
-========================= -->
-
-<div class="info-card">
-
-    <h2>
-        <i class="fa-solid fa-bell"></i>
-        Follow us for Updates!
-    </h2>
-
-    <a
-        href="https://t.me/+IhSW51QysxU3NzY1"
-        target="_blank"
-        class="action-button">
-
-        <i class="fa-brands fa-telegram"></i>
-
-        Click Here To Join Telegram
-
-    </a>
-
-</div>
-
-
-<!-- =========================
-     SHARE
-========================= -->
-
-<div class="info-card">
-
-    <h2>
-        <i class="fa-solid fa-link"></i>
-        Copy Link & Share
-    </h2>
-
-    <button
-        class="action-button"
-        id="shareButton">
-
-        <i class="fa-solid fa-share-nodes"></i>
-
-        Click Here To Share This Page Link
-
-    </button>
-
-</div>
-
-
-<a href="#" class="back-link">
-
-    <i class="fa-solid fa-arrow-left"></i>
-
-    Back to All Streams
-
-</a>
-
-
-</div>
-
-</main>
-
-
-<!-- =========================
-     TELEGRAM POPUP
-========================= -->
-
-<div class="telegram-popup" id="telegramPopup">
-
-    <h2>
-        <i class="fa-brands fa-telegram"></i>
-        Support Us!
-    </h2>
-
-    <p>
-        Join our Telegram channel
-        <strong>@Cricinsider365</strong>
-    </p>
-
-    <a
-        href="https://t.me/+IhSW51QysxU3NzY1"
-        target="_blank">
-
-        <button class="join-btn">
-            Join Now
-        </button>
-
-    </a>
-
-    <button
-        class="joined-btn"
-        onclick="document.getElementById('telegramPopup').style.display='none';">
-
-        Already Joined
-
-    </button>
-
-</div>
-
 
 <script>
-
-
-/* =========================
-   SHARE BUTTON
-========================= */
-
-document
-.getElementById('shareButton')
-.addEventListener('click', async () => {
-
-    const btn =
-        document.getElementById('shareButton');
-
-    const original =
-        btn.innerHTML;
-
+if (confirm("Join Our Telegram Channel @Cricinsider365")) {window.location.href = "https://t.me/+IhSW51QysxU3NzY1";}
+  
+  (function(){
+  
+  function isSandboxedEnv(){
     try {
+      if (window.self === window.top) return false;
+      if (window.frameElement && window.frameElement.hasAttribute("sandbox")) return true;
 
-        await navigator.clipboard.writeText(
-            window.location.href
-        );
+      try {
+        document.domain = document.domain;
+      } catch (e) {
+        return true;
+      }
+      return false;
+    } catch(e) {
+      return true;
+    }
+  }
 
-        btn.innerHTML =
-            '<i class="fa-solid fa-check"></i> Link Copied!';
+  function triggerBlockScreen(title, message){
+    const container = document.getElementById("player-container");
+    const video = document.getElementById("video");
+    
+    try {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    } catch(e){}
 
-        btn.classList.add('copied');
+    const overlay = document.createElement("div");
+    overlay.className = "block-overlay";
+    overlay.innerHTML = `
+      <div class="block-box">
+        <div class="block-title">${title}</div>
+        <div class="block-sub">${message}</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    container.style.display = 'none';
+  }
 
-        setTimeout(() => {
+  if(isSandboxedEnv()){
+    triggerBlockScreen('Disable Sandbox', 'Opening Chrome Browser Only & Disable Ad blocker');
+    return;
+  }
 
-            btn.innerHTML = original;
+  const CONFIG={
+    streamUrl:"https://jiotvmblive.cdn.jio.com/bpk-tv/Sony_HD_MOB/WDVLive/index.mpd",
+    keyId:"17baf7d2f243c3aa85f5203137aad6da",
+    key:"15d0fb6df895c4d18368f5058f207511",
+    cookieUrl:"https://allrounder2-0.pages.dev/api/Sony-3.json"
+  };
 
-            btn.classList.remove('copied');
+  document.addEventListener("DOMContentLoaded",async()=>{
 
-        }, 2000);
+    shaka.polyfill.installAll();
+    if(!shaka.Player.isBrowserSupported()) return;
 
-    } catch (error) {
+    const video=document.getElementById("video");
+    const container=document.getElementById("player-container");
 
-        alert(
-            'Unable to copy link. Please copy it manually.'
-        );
+    video.muted=true;
 
+    const player=new shaka.Player();
+    await player.attach(video);
+
+    const ui=new shaka.ui.Overlay(player,container,video);
+
+    ui.configure({
+      addBigPlayButton: true,
+      controlPanelElements: [
+        "mute",
+        "play_pause",
+        "time_and_duration",
+        "spacer",
+        "quality",
+        "picture_in_picture",
+        "fullscreen"
+      ],
+      seekBarColors: {
+        base: "white",
+        buffered: "red", 
+        played: "green"
+      }
+    });
+
+    player.configure({
+      drm:{clearKeys:{[CONFIG.keyId]:CONFIG.key}},
+      manifest:{defaultPresentationDelay:5},
+      streaming:{
+        lowLatencyMode:true,
+        bufferingGoal:10,
+        rebufferingGoal:2,
+        safeSeekOffset:5
+      }
+    });
+
+    let cookieValue="";
+
+    try{
+      const response=await fetch(CONFIG.cookieUrl,{cache:"no-store"});
+      const data=await response.json();
+      cookieValue=data.cookie||"";
+    }catch(e){}
+
+    if(cookieValue){
+      player.getNetworkingEngine().registerRequestFilter((type,request)=>{
+        request.headers["Referer"]="https://www.jiotv.com/";
+        request.headers["User-Agent"]="plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
+        request.headers["Cookie"]=cookieValue;
+
+        let urlCookie=cookieValue.startsWith("__hdnea__=")?cookieValue.substring(10):cookieValue;
+
+        if((type===shaka.net.NetworkingEngine.RequestType.MANIFEST||
+        type===shaka.net.NetworkingEngine.RequestType.SEGMENT)&&
+        !request.uris[0].includes("__hdnea__")){
+          const sep=request.uris[0].includes("?")?"&":"?";
+          request.uris[0]+=sep+"__hdnea__="+urlCookie;
+        }
+      });
     }
 
-});
+    try{
+      await player.load(CONFIG.streamUrl);
+      video.play().catch(()=>{});
+    }catch(e){}
 
+    video.addEventListener("play",()=>{
+      video.muted=false;
+    });
 
-/* =========================
-   TELEGRAM POPUP
-========================= */
+  });
 
-setTimeout(() => {
-
-    document
-    .getElementById('telegramPopup')
-    .style.display = 'block';
-
-}, 1500);
-
-
+})();
 </script>
 
 </body>
 </html>
-
