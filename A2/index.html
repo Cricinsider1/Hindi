@@ -1,98 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cricinsider365</title>
+    <meta charset="UTF-8">
+    <title>TG_@Cricinsider365</title>
 <script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-  <script src="https://content.jwplatform.com/libraries/KB5zFt7A.js"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #000000, #1a1a1a);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    #logo {
-      position: absolute;
-      top: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      cursor: pointer;
-    }
+    <!-- Plyr + HLS.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.min.js" crossorigin="anonymous"></script>
 
-    #logo img {
-      width: 180px;
-      height: auto;
-    }
+    <style>
+        /* Reset & Fullscreen */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    #video {
-      width: 90%;
-      max-width: 720px;
-      margin: 60px auto 20px auto;
-      border: 2px solid #1e90ff;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-      transition: border 0.3s;
-    }
+        .player-container {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .fullscreen #video {
-      border: none;
-      box-shadow: none;
-    }
+        .plyr {
+            width: 100%;
+            height: 100%;
+        }
 
-    #telegramButton {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 250px;
-      height: 50px;
-      background: linear-gradient(90deg, #1e90ff, #001f3f);
-      color: white;
-      font-weight: bold;
-      font-size: 16px;
-      border: none;
-      border-radius: 25px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-      cursor: pointer;
-      overflow: hidden;
-      position: relative;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
+        .plyr__video-wrapper {
+            height: 100%;
+        }
 
-    #telegramButton:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-      background: linear-gradient(90deg, #001f3f, #1e90ff);
-    }
-  </style>
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        /* Custom watermark */
+        .custom-watermark {
+            position: absolute;
+            z-index: 40;
+            pointer-events: none;
+            bottom: 80px;
+            right: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.10);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: #000;
+            color: #fff;
+            z-index: 2000;
+            font-size: 18px;
+            pointer-events: none;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, .15);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Plyr overrides for dark theme */
+        .plyr--video {
+            background: #000;
+        }
+        .plyr__controls {
+            background: rgba(0, 0, 0, 0.75) !important;
+            backdrop-filter: blur(8px);
+        }
+        .plyr__control--overlaid {
+            background: rgba(255, 59, 48, 0.9) !important;
+        }
+        .plyr__control--overlaid svg {
+            fill: #fff !important;
+        }
+        .plyr__progress__buffer {
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+        .plyr__progress__played {
+            background: #ff3b30 !important;
+        }
+        .plyr__menu__container {
+            background: rgba(20, 20, 20, 0.95) !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+        }
+        .plyr__menu__container .plyr__control--back {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .plyr__volume input[type="range"] {
+            background: rgba(255,255,255,0.2) !important;
+        }
+        .plyr__volume input[type="range"]::-webkit-slider-thumb {
+            background: #ff3b30 !important;
+        }
+        .plyr__volume input[type="range"]::-moz-range-thumb {
+            background: #ff3b30 !important;
+        }
+
+        @media (max-width: 700px) {
+            .custom-watermark {
+                font-size: 9px;
+                bottom: 70px;
+                right: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Logo -->
-  <div id="logo" onclick="redirectToWebsite()">
-    <img src="https://i.postimg.cc/fRSw4ZRD/IMG-20250925-223757.jpg" alt="Logo" />
-  </div>
+<div class="player-container" id="playerContainer">
+    <video id="video" autoplay muted playsinline preload="metadata"></video>
+    <div class="custom-watermark">LIVE · FANCODE</div>
 
-  <!-- Video Player -->
-  <div id="video"></div>
+    <!-- Loading overlay -->
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        Loading stream...
+    </div>
+</div>
 
-  <!-- Telegram Button -->
-  <div id="telegramButton" onclick="redirectToTelegram()">
-    Join Telegram For More Live Links 
-  </div>
+<script>
+    (function() {
+        'use strict';
 
-  <script>
-    const _0x3621d6=_0x587f;(function(_0x165dfa,_0x3a223f){const _0x38ad43=_0x587f,_0x12c1bf=_0x165dfa();while(!![]){try{const _0x9da98e=parseInt(_0x38ad43(0x8d))/0x1*(parseInt(_0x38ad43(0x94))/0x2)+-parseInt(_0x38ad43(0x8e))/0x3*(parseInt(_0x38ad43(0x99))/0x4)+-parseInt(_0x38ad43(0xa0))/0x5+parseInt(_0x38ad43(0x8c))/0x6*(parseInt(_0x38ad43(0x9c))/0x7)+-parseInt(_0x38ad43(0x9f))/0x8*(parseInt(_0x38ad43(0xa3))/0x9)+parseInt(_0x38ad43(0x90))/0xa+parseInt(_0x38ad43(0x9e))/0xb;if(_0x9da98e===_0x3a223f)break;else _0x12c1bf['push'](_0x12c1bf['shift']());}catch(_0x1d76b6){_0x12c1bf['push'](_0x12c1bf['shift']());}}}(_0xa383,0x61985));const playerInstance=jwplayer(_0x3621d6(0x98))[_0x3621d6(0x96)]({'width':'100%','aspectratio':_0x3621d6(0x93),'autostart':!![],'mute':![],'file':_0x3621d6(0x9a),'skin':{'name':_0x3621d6(0x92)}});playerInstance['on'](_0x3621d6(0x9d),function(_0x447c45){const _0x4ae7b2=_0x3621d6;_0x447c45[_0x4ae7b2(0x9d)]?document['body'][_0x4ae7b2(0x8f)][_0x4ae7b2(0x95)](_0x4ae7b2(0x9d)):document['body'][_0x4ae7b2(0x8f)]['remove'](_0x4ae7b2(0x9d));});function redirectToTelegram(){const _0x353f41=_0x3621d6;window[_0x353f41(0xa2)][_0x353f41(0xa1)]=_0x353f41(0x91);}function _0x587f(_0x148cab,_0x2d7edd){const _0xa383ac=_0xa383();return _0x587f=function(_0x587f3b,_0x152d04){_0x587f3b=_0x587f3b-0x8c;let _0x45699=_0xa383ac[_0x587f3b];return _0x45699;},_0x587f(_0x148cab,_0x2d7edd);}function _0xa383(){const _0x298360=['Join\x20Our\x20Telegram\x20Channel\x20to\x20stay\x20updated!','video','4nnfCbU','https://sunny-relay-friend.lovable.app/api/public/px/sony?url=https%3A%2F%2Fin-mc-flive.fancode.com%2Fmumbai%2F4249223_hindi_hls_39d47cc1be90742_1ta-di_h264%2F1080p.m3u8%3Fhdntl%3DExpires%3D1791211848~_GO%3DGenerated~acl%3D%2Fmumbai%2F4249223_hindi_hls_39d47cc1be90742_1ta-di_h264%2F*~Signature%3DARxeIm96hGLDhOv19-ffKmvIfQI_q3BWsy00bNbcvwFvp9yEdCod9_-T3jMnOhXJSKRfASry4fkpaIBDmx3NsEJlxRgO','onload','287147GpLMbl','fullscreen','1466828SwJrEl','16pEbzFl','1124080oFQTrA','href','location','350190pAHffd','84ubOdlQ','1TJgiey','2019111bQkztM','classList','2002680bUTJFK','https://t.me/+IhSW51QysxU3NzY1','glow','16:9','935024CjHDTJ','add','setup'];_0xa383=function(){return _0x298360;};return _0xa383();}function redirectToWebsite(){const _0x146e52=_0x3621d6;window[_0x146e52(0xa2)][_0x146e52(0xa1)]='https://t.me/+IhSW51QysxU3NzY1';}window[_0x3621d6(0x9b)]=function(){const _0xab1645=_0x3621d6;confirm(_0xab1645(0x97))&&redirectToTelegram();};
-  </script>
+        /* ========== CONFIG ========== */
+        const STREAM_URL =
+            "https://sunny-relay-friend.lovable.app/api/public/px/sony?url=https%3A%2F%2Fin-mc-flive.fancode.com%2Fmumbai%2F4249223_hindi_hls_39d47cc1be90742_1ta-di_h264%2F1080p.m3u8%3Fhdntl%3DExpires%3D1791211848~_GO%3DGenerated~acl%3D%2Fmumbai%2F4249223_hindi_hls_39d47cc1be90742_1ta-di_h264%2F*~Signature%3DARxeIm96hGLDhOv19-ffKmvIfQI_q3BWsy00bNbcvwFvp9yEdCod9_-T3jMnOhXJSKRfASry4fkpaIBDmx3NsEJlxRgO";
+
+        const DOM = {
+            video: document.getElementById('video'),
+            container: document.getElementById('playerContainer'),
+            loading: document.getElementById('loading'),
+        };
+
+        let hlsInstance = null;
+        let plyrInstance = null;
+        let userPaused = false;
+        let isInitialized = false;
+
+        /* ========== HELPERS ========== */
+        function hideLoading() {
+            if (DOM.loading) DOM.loading.style.display = 'none';
+        }
+
+        function showLoading() {
+            if (DOM.loading) DOM.loading.style.display = 'flex';
+        }
+
+        function destroyPlayer() {
+            if (hlsInstance) {
+                try { hlsInstance.destroy(); } catch (_) {}
+                hlsInstance = null;
+            }
+            if (plyrInstance) {
+                try { plyrInstance.destroy(); } catch (_) {}
+                plyrInstance = null;
+            }
+        }
+
+        /* ========== PAUSE/RESUME LOGIC (from original) ========== */
+        function setupPauseResumeLogic(video) {
+            // Reset userPaused flag on play
+            video.addEventListener('play', function() {
+                userPaused = false;
+            });
+
+            // Detect user-initiated pause via click on play/pause button
+            document.addEventListener('click', function(e) {
+                const pauseBtn = e.target.closest('.plyr__control--pressed') || 
+                                e.target.closest('.plyr__control[data-plyr="play"]');
+                if (pauseBtn) {
+                    if (!video.paused) {
+                        userPaused = true;
+                    } else {
+                        userPaused = false;
+                    }
+                }
+            });
+
+            // Handle automatic pauses (buffering, etc.)
+            video.addEventListener('pause', function() {
+                if (!video.ended && !userPaused && isInitialized) {
+                    // Auto-resume after a short delay
+                    setTimeout(() => {
+                        if (video.paused && !video.ended && !userPaused) {
+                            video.play().catch(() => {});
+                        }
+                    }, 500);
+                }
+                // Reset flag after pause event
+                setTimeout(() => {
+                    userPaused = false;
+                }, 100);
+            });
+
+            // Periodic check: if video is stuck paused, resume
+            setInterval(() => {
+                if (video.paused && !video.ended && !userPaused && isInitialized) {
+                    video.play().catch(() => {});
+                }
+            }, 3000);
+        }
+
+        /* ========== INIT PLAYER ========== */
+        async function initPlayer() {
+            const video = DOM.video;
+            const container = DOM.container;
+
+            showLoading();
+            destroyPlayer();
+
+            try {
+                // --- Try HLS.js first ---
+                if (Hls.isSupported()) {
+                    const hls = new Hls({
+                        maxMaxBufferLength: 100,
+                        liveSyncDurationCount: 3,
+                        liveMaxLatencyDurationCount: 6,
+                        enableWorker: true,
+                        xhrSetup: (xhr) => { xhr.withCredentials = false; }
+                    });
+
+                    hlsInstance = hls;
+                    hls.loadSource(STREAM_URL);
+                    hls.attachMedia(video);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        // Get quality levels
+                        const levels = hls.levels
+                            .map(l => l.height)
+                            .filter(Boolean)
+                            .sort((a, b) => a - b);
+
+                        // Init Plyr
+                        plyrInstance = new Plyr(video, {
+                            controls: [
+                                'play-large', 'play', 'progress', 'current-time',
+                                'mute', 'volume', 'settings', 'fullscreen'
+                            ],
+                            settings: ['quality'],
+                            quality: {
+                                default: levels[levels.length - 1] || 720,
+                                options: levels.length ? levels : [360, 480, 720, 1080],
+                                forced: true,
+                                onChange: (newQuality) => {
+                                    hls.levels.forEach((level, index) => {
+                                        if (level.height === newQuality) hls.currentLevel = index;
+                                    });
+                                }
+                            }
+                        });
+
+                        // ========== KEY CHANGE: Start with pause but unmuted ==========
+                        // First ensure video is unmuted
+                        video.muted = false;
+
+                        // Load the stream but don't autoplay - keep it paused
+                        // The video will be paused initially with the big play button visible
+                        // We need to make sure it stays paused after loading
+                        video.pause();
+
+                        // Mark as initialized so the auto-resume logic doesn't kick in
+                        isInitialized = true;
+
+                        // Hide loading once stream is ready
+                        video.addEventListener('loadeddata', hideLoading);
+                        setTimeout(hideLoading, 3000);
+
+                        // Setup pause/resume logic
+                        setupPauseResumeLogic(video);
+
+                        // Also handle quality changes via Plyr settings
+                        plyrInstance.on('qualitychange', (quality) => {
+                            // quality is already handled by the onChange above
+                        });
+                    });
+
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                                hls.startLoad();
+                            } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                                hls.recoverMediaError();
+                            } else {
+                                console.warn('Fatal HLS error:', data);
+                                // Try fallback
+                                fallbackToNative(video);
+                            }
+                        }
+                    });
+
+                } else {
+                    // --- Fallback to native HLS (Safari) ---
+                    fallbackToNative(video);
+                }
+
+            } catch (err) {
+                console.error('Init error:', err);
+                fallbackToNative(video);
+            }
+        }
+
+        /* ========== FALLBACK: Native HLS ========== */
+        function fallbackToNative(video) {
+            console.log('Using native HLS fallback');
+            destroyPlayer();
+
+            video.src = STREAM_URL;
+
+            // ========== KEY CHANGE: Start with pause but unmuted ==========
+            video.muted = false;
+
+            // Init Plyr without quality settings
+            plyrInstance = new Plyr(video, {
+                controls: [
+                    'play-large', 'play', 'progress', 'current-time',
+                    'mute', 'volume', 'settings', 'fullscreen'
+                ]
+            });
+
+            // Keep it paused initially
+            video.pause();
+
+            // Mark as initialized
+            isInitialized = true;
+
+            video.addEventListener('loadeddata', hideLoading);
+            setTimeout(hideLoading, 3000);
+
+            setupPauseResumeLogic(video);
+        }
+
+        /* ========== START ========== */
+        document.addEventListener('DOMContentLoaded', () => {
+            initPlayer();
+        });
+
+        // Handle visibility change to resume if needed
+        document.addEventListener('visibilitychange', () => {
+            const video = DOM.video;
+            if (!document.hidden && video && video.paused && !video.ended && isInitialized) {
+                video.play().catch(() => {});
+            }
+        });
+
+    })();
+</script>
+<script>
+// alert('Join Our Telegram For More Live Links')
+         if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
+         window.open("https://t.me/+IhSW51QysxU3NzY1", '_blank');
+     }
+</script>
 </body>
 </html>
