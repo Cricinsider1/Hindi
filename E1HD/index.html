@@ -1,1 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="referrer"
+    content="no-referrer"
+>
+
+<title>TG_@Cricinsider365</title>
+<script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/shaka-player.ui.min.js"></script>
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/controls.min.css"
+>
+
+<style>
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+}
+
+.shaka-video-container {
+    width: 100%;
+    height: 100%;
+    background: #000;
+}
+
+#videoPlayer {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    object-fit: contain;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div
+    id="videoContainer"
+    class="shaka-video-container"
+>
+
+    <video
+        id="videoPlayer"
+        playsinline
+        autoplay
+        muted
+    ></video>
+
+</div>
+
+
+<script>
+
+const STREAM_URL =
+    "https://jiotvpllive.cdn.jio.com//bpk-tv/Star_Sports_HD1_BTS/WDVLive/index.mpd";
+
+
+const DRM_KEYS =
+    "45825561f4ef516691a9e16d1d35dd1d:3951fe7fbf4b0b33e6246fc401f76797,bf95222d9be85d85a91281e796e99481:bc932276031b3e63758cf67b147c3557,f217e9fe133e5b948c323abef1e39b47:63640dc4430d14003def0c97a2dbab4d,eda3132244745c10920b01536bc8a75b:2b5f8bdba279032943a040078bb22b35,06dd6287c4b956419d15d6c8e513aeed:a82d6b850b5c281c0054fc6d55e1c6ba";
+
+
+const COOKIE_JSON_URL =
+    "https://sonujson-v4.pages.dev/Data/sports.json";
+
+
+const CHANNEL_ID =
+    "E1HD";
+
+
+const videoElement =
+    document.getElementById(
+        "videoPlayer"
+    );
+
+
+const videoContainer =
+    document.getElementById(
+        "videoContainer"
+    );
+
+
+let player;
+let ui;
+
+
+function parseDrmKeys(value) {
+
+    const clearKeys = {};
+
+    const pairs =
+        String(value || "")
+            .split(",")
+            .map(
+                pair =>
+                    pair.trim()
+            )
+            .filter(Boolean);
+
+
+    for (
+        const pair of pairs
+    ) {
+
+        const separator =
+            pair.indexOf(":");
+
+
+        if (
+            separator === -1
+        ) {
+
+            console.warn(
+                "Invalid DRM pair:",
+                pair
+            );
+
+            continue;
+        }
+
+
+        const kid =
+            pair
+                .slice(
+                    0,
+                    separator
+                )
+                .trim()
+                .toLowerCase();
+
+
+        const key =
+            pair
+                .slice(
+                    separator + 1
+                )
+                .trim()
+                .toLowerCase();
+
+
+        if (
+            !kid ||
+            !key
+        ) {
+
+            continue;
+        }
+
+
+        clearKeys[kid] =
+            key;
+
+    }
+
+
+    return clearKeys;
+}
+
+
+async function getCookie() {
+
+    const response =
+        await fetch(
+            COOKIE_JSON_URL,
+            {
+                method: "GET",
+                cache: "no-store"
+            }
+        );
+
+
+    if (
+        !response.ok
+    ) {
+
+        throw new Error(
+            "Cookie JSON request failed: " +
+            response.status
+        );
+
+    }
+
+
+    const data =
+        await response.json();
+
+
+    if (
+        !data ||
+        !Array.isArray(
+            data.channels
+        )
+    ) {
+
+        throw new Error(
+            "Invalid JSON format."
+        );
+
+    }
+
+
+    const channel =
+        data.channels.find(
+            item =>
+                String(
+                    item.id || ""
+                )
+                    .trim()
+                    .toLowerCase() ===
+                CHANNEL_ID
+                    .toLowerCase()
+        );
+
+
+    if (!channel) {
+
+        throw new Error(
+            "Channel not found: " +
+            CHANNEL_ID
+        );
+
+    }
+
+
+    const cookie =
+        String(
+            channel.cookie || ""
+        ).trim();
+
+
+    if (!cookie) {
+
+        throw new Error(
+            "Cookie not found for " +
+            CHANNEL_ID
+        );
+
+    }
+
+
+    return cookie;
+}
+
+
+function configureStreamRequests(
+    cookie
+) {
+
+    if (!cookie) {
+        return;
+    }
+
+
+    const networkingEngine =
+        player.getNetworkingEngine();
+
+
+    if (!networkingEngine) {
+        return;
+    }
+
+
+    networkingEngine.registerRequestFilter(
+        (type, request) => {
+
+            if (
+                !request.uris ||
+                !request.uris[0]
+            ) {
+
+                return;
+            }
+
+
+            request.headers =
+                request.headers || {};
+
+
+            request.headers["Cookie"] =
+                cookie;
+
+
+            const url =
+                request.uris[0];
+
+
+            if (
+                (type === 0 || type === 1) &&
+                !url.includes(
+                    "__hdnea="
+                ) &&
+                !url.includes(
+                    "__hdnea__"
+                ) &&
+                !url.includes(
+                    "hdnts="
+                )
+            ) {
+
+                request.uris[0] =
+                    url +
+                    (
+                        url.includes("?")
+                            ? "&"
+                            : "?"
+                    ) +
+                    cookie;
+
+            }
+
+        }
+    );
+}
+
+
+function configureDrm() {
+
+    const clearKeys =
+        parseDrmKeys(
+            DRM_KEYS
+        );
+
+
+    player.configure({
+
+        drm: {
+            clearKeys:
+                clearKeys
+        },
+
+        manifest: {
+            defaultPresentationDelay: 5
+        },
+
+        streaming: {
+            lowLatencyMode: true,
+            bufferingGoal: 10,
+            rebufferingGoal: 2,
+            safeSeekOffset: 5
+        }
+
+    });
+}
+
+
+async function initPlayer() {
+
+    try {
+
+        shaka.polyfill.installAll();
+
+
+        if (
+            !shaka.Player
+                .isBrowserSupported()
+        ) {
+
+            throw new Error(
+                "This browser does not support Shaka Player."
+            );
+
+        }
+
+
+        player =
+            new shaka.Player();
+
+
+        await player.attach(
+            videoElement
+        );
+
+
+        ui =
+            new shaka.ui.Overlay(
+                player,
+                videoContainer,
+                videoElement
+            );
+
+
+        ui.configure({
+
+            controlPanelElements: [
+                "play_pause",
+                "time_and_duration",
+                "mute",
+                "volume",
+                "spacer",
+                "quality",
+                "picture_in_picture",
+                "fullscreen"
+            ]
+
+        });
+
+
+        player.addEventListener(
+            "error",
+            event => {
+
+                console.error(
+                    "Shaka Player Error:",
+                    event.detail
+                );
+
+            }
+        );
+
+
+        const cookie =
+            await getCookie();
+
+
+        configureStreamRequests(
+            cookie
+        );
+
+
+        configureDrm();
+
+
+        await player.load(
+            STREAM_URL
+        );
+
+
+        try {
+
+            await videoElement.play();
+
+        } catch (error) {
+
+            console.log(
+                "Autoplay blocked."
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Player initialization failed:",
+            error
+        );
+
+    }
+
+}
+
+
+initPlayer();
+
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        if (player) {
+
+            player.destroy()
+                .catch(
+                    () => {}
+                );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
