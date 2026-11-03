@@ -1,110 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TG_@Cricinsider365</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>TG_@Cricinsider365</title>
 <script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #000; /* Pure black */
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-        }
 
-        .loading-message {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ffcc00;
-            margin-bottom: 10px;
-            padding: 10px 20px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            box-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ffcc00;
-            animation: glow 1.5s infinite alternate;
-        }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.3.4/dist/controls.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        @keyframes glow {
-            0% { box-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00; }
-            100% { box-shadow: 0 0 20px #ffcc00, 0 0 30px #ffcc00; }
-        }
+<style>
 
-        .player-container {
-            width: 95%;
-            max-width: 1200px;
-            margin: 20px auto;
-            box-shadow: 0 6px 25px rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            overflow: hidden;
-            background: #000;
-            position: relative;
-        }
+:root {
+    --bg-color: #070b1a;
+    --primary-red: #4f46e5;
+    --primary-red-dark: #9333ea;
+    --card-bg: #0f172a;
+    --text-light: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border-color: #1e293b;
+}
 
-        .player-container iframe {
-            border-radius: 15px;
-            width: 100%;
-            height: 100%;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        .join-telegram-container {
-            margin-top: 20px;
-        }
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
 
-        .join-telegram-btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            background-color: #008fd6;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-            transition: background 0.3s ease;
-        }
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease-out forwards;
+}
 
-        .join-telegram-btn:hover {
-            background-color: #006bb3;
-        }
-    </style>
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* VIDEO PLAYER */
+
+#player-container {
+    width: 100%;
+    aspect-ratio: 16/9;
+    max-height: 70vh;
+    background-color: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* INFO CARD */
+
+.info-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.info-card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+}
+
+/* TELEGRAM BUTTON */
+
+.action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--primary-red), var(--primary-red-dark));
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+}
+
+/* CLICKABLE BANNER */
+
+.banner-container {
+    width: 100%;
+    margin-top: 1rem;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.banner-container a {
+    display: block;
+    width: 100%;
+}
+
+.banner-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+/* WHATSAPP BUTTON */
+
+.whatsapp-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    margin-top: 1rem;
+    background: #25D366;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 10px;
+    transition: 0.2s ease;
+}
+
+.whatsapp-button i {
+    font-size: 23px;
+}
+
+.whatsapp-button:hover {
+    background: #1ebe5d;
+    transform: translateY(-2px);
+}
+
+/* SMALL TELEGRAM IMAGE BUTTON */
+
+.small-telegram-button {
+    width: 75%;
+    max-width: 420px;
+    margin: 12px auto 0;
+    display: block;
+    transition: 0.2s ease;
+}
+
+.small-telegram-button img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.small-telegram-button:hover {
+    transform: translateY(-2px);
+}
+
+/* BACK LINK */
+
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.back-link:hover {
+    background-color: var(--card-bg);
+    color: var(--text-light);
+}
+
+/* MOBILE RESPONSIVE */
+
+@media (max-width: 600px) {
+
+    .whatsapp-button {
+        font-size: 15px;
+    }
+
+    .small-telegram-button {
+        width: 75%;
+    }
+
+}
+
+</style>
 </head>
+
 <body>
 
-    <div class="loading-message">Share The Links With Your Friends</div>
+<main class="container">
 
-    <div class="player-container">
-        <div style="padding:56.25% 0 0 0;position:relative;">
-            <iframe id="contentFrame"
-                src="https://trend48.st/live-tv?ch=willow-usa"
-                style="position:absolute;top:0;left:0;width:100%;height:100%;"
-                frameborder="0"
-                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                allowfullscreen>
-            </iframe>
-        </div>
+<div id="stream-content">
+
+    <!-- CHANNEL HEADER BUTTON -->
+
+    <div style="margin-bottom: 1rem;">
+
+        <a
+            href="https://t.me/+IhSW51QysxU3NzY1"
+            target="_blank"
+            class="action-button">
+
+            <i class="fa-brands fa-telegram"></i>
+            @Cricinsider365
+
+        </a>
+
     </div>
 
-    <div class="join-telegram-container">
-        <button class="join-telegram-btn" onclick="window.open('https://t.me/+IhSW51QysxU3NzY1', '_blank')">
-            Join Telegram Channel
-        </button>
+    <!-- VIDEO PLAYER -->
+
+    <div id="player-container">
+
+        <iframe
+            src="https://trend48.st/live-tv?ch=willow-usa"
+            style="width:100%; height:100%; border:0;"
+            allow="encrypted-media; autoplay"
+            allowfullscreen>
+        </iframe>
+
     </div>
 
-    <script>
-        if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
-            window.open("https://t.me/+IhSW51QysxU3NzY1", '_blank');
-        }
-    </script>
+    <!-- TELEGRAM INFO -->
+
+    <div class="info-card">
+
+        <h2>
+            <i class="fa-solid fa-bell"></i>
+            Follow us for Updates!
+        </h2>
+
+        <a
+            href="https://t.me/+IhSW51QysxU3NzY1"
+            target="_blank"
+            class="action-button">
+
+            <i class="fa-brands fa-telegram"></i>
+            Click Here To Join Telegram
+
+        </a>
+
+    </div>
+
+    <!-- CLICKABLE JPG BANNER -->
+
+    <div class="banner-container">
+
+        <a
+            href="https://www.balaji99.life/"
+            target="_blank">
+
+            <img
+                src="https://i.postimg.cc/8cjx5MF7/IMG-20261103-031456-950.jpg"
+                alt="Advertisement Banner">
+
+        </a>
+
+    </div>
+
+    <!-- WHATSAPP MESSAGE BUTTON -->
+
+    <a
+        href="https://w.app/balajinew1"
+        target="_blank"
+        class="whatsapp-button">
+
+        <i class="fa-brands fa-whatsapp"></i>
+        Message on WhatsApp
+
+    </a>
+
+    <!-- SMALL TELEGRAM IMAGE BUTTON -->
+
+    <a
+        href="https://t.me/+uO5b8Mf_EYllNTNl"
+        target="_blank"
+        class="small-telegram-button">
+
+        <img
+            src="https://i.postimg.cc/L4Vp8XL1/balaji99-telegram-banner-2.jpg"
+            alt="Join Telegram Channel">
+
+    </a>
+
+    <!-- BACK LINK -->
+
+    <a href="#" class="back-link">
+
+        <i class="fa-solid fa-arrow-left"></i>
+        Enjoy Free Streaming ❤️
+
+    </a>
+
+</div>
+
+<script>
+
+if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
+    window.open("https://t.me/+IhSW51QysxU3NzY1", "_blank");
+}
+
+</script>
 
 </body>
 </html>
