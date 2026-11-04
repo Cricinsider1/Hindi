@@ -1,249 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TG_@Cricinsider365</title>
-<script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
-
-<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
-
+<title>Formula 1 - Miami GP</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/controls.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/shaka-player.ui.js" crossorigin="anonymous"></script>
+<script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:sans-serif;}
+body{background-color:#000;}
 
-.shaka-video-container{
-position:fixed;
-inset:0;
-background:#000;
-display:flex;
-align-items:center;
-justify-content:center;
+.video-container{
+  position:relative;
+  width:100%;
+  height:100%;
+  background:#000;
 }
 
-video{
-width:100%;
-height:100%;
-object-fit:contain;
-background:#000;
+#player-wrap{
+  position:absolute;
+  inset:0;
 }
 
-.custom-watermark{
-position:absolute;
-z-index:40;
-pointer-events:none;
-top:65%;
-left:6%;
-transform:translateY(-50%);
-font-size:11px;
-font-weight:600;
-color:rgba(255,255,255,0.12);
+#video{
+  width:100%;
+  height:100%;
 }
 
-.block-overlay{
-position:fixed;
-inset:0;
-z-index:99999;
-display:flex;
-align-items:center;
-justify-content:center;
-background:radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
-text-align:center;
+/* Hide Shaka spinner */
+.shaka-spinner-container,
+.shaka-buffering-spinner,
+.shaka-spinner {
+  display:none!important;
 }
 
-.block-box{
-padding:40px;
-max-width:500px;
-width:90%;
-background:rgba(20, 20, 20, 0.95);
-border-radius:16px;
-border:1px solid rgba(255, 255, 255, 0.1);
-box-shadow:0 20px 50px rgba(0,0,0,0.5);
-animation: fadeInUp 0.6s ease-out;
+/* ✅ Keep Shaka's bottom bar pinned to the bottom on mobile */
+.shaka-bottom-controls {
+  bottom: 0 !important;
+  top: auto !important;
 }
 
-@keyframes fadeInUp {
-from { opacity: 0; transform: translateY(30px); }
-to { opacity: 1; transform: translateY(0); }
+#status{
+  position:fixed;
+  left:12px;
+  bottom:12px;
+  z-index:5;
+  color:rgba(255,255,255,.9);
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:8px;
+  padding:6px 10px;
+  font-size:12px;
+  max-width:88vw;
 }
 
-.block-title{
-font-size:42px;
-font-weight:800;
-color:#ffffff;
-text-transform:uppercase;
-letter-spacing:2px;
-margin-bottom:20px;
-}
-
-.block-sub{
-font-size:14px;
-color:rgba(255,255,255,0.6);
-line-height:1.6;
-}
-
-@media(max-width:700px){
-.custom-watermark{font-size:9px;top:60%;left:16%}
-.block-title{font-size:28px}
-.block-box{padding:25px}
-.block-sub{font-size:12px}
+#status:empty{
+  display:none;
 }
 </style>
-
-
-
 </head>
-
 <body>
-
-<div class="shaka-video-container shaka-mobile" id="player-container" shaka-controls="true">
-  
-  <video id="video" autoplay muted playsinline preload="metadata" class="shaka-video"></video>
-  
-  <div class="custom-watermark"></div>
-
+<div class="video-container">
+  <div id="player-wrap" data-shaka-player-container>
+    <video autoplay muted playsinline data-shaka-player id="video"></video>
+  </div>
 </div>
 
+<div id="status"></div>
+
 <script>
-if (confirm("Join Our Telegram Channel @Cricinsider365")) {window.location.href = "https://t.me/+IhSW51QysxU3NzY1";}
-  
-  (function(){
-  
-  function isSandboxedEnv(){
-    try {
-      if (window.self === window.top) return false;
-      if (window.frameElement && window.frameElement.hasAttribute("sandbox")) return true;
+function showStatus(text){
+  var s = document.getElementById('status');
+  if (s) s.textContent = text;
+}
 
-      try {
-        document.domain = document.domain;
-      } catch (e) {
-        return true;
-      }
-      return false;
-    } catch(e) {
-      return true;
+function onPlayerError(error){
+  var code = error && error.code ? error.code : 'UNKNOWN';
+  console.error('Shaka error', error);
+  showStatus('Stream failed (' + code + ')');
+}
+
+// ---------- Fetch stream URL from GitHub JSON by ?id= ----------
+const JSON_URL = 'https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json';
+
+async function fetchStreamUrlById(matchId) {
+  if (!matchId) return null;
+  try {
+    showStatus('Fetching stream data…');
+    const resp = await fetch(JSON_URL, { cache: 'no-store' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+    const json = await resp.json();
+
+    const matches = Array.isArray(json) ? json : (json.matches || []);
+    if (!matches.length) throw new Error('No matches array found');
+
+    const target = String(matchId).trim().toLowerCase();
+    const item = matches.find(m => String(m.match_id || '').trim().toLowerCase() === target);
+
+    if (!item) {
+      console.warn('No match found for id:', matchId);
+      return null;
     }
+
+    const url = item.adfree_url || item.dai_url || null;
+    if (url) {
+      console.log('✅ Found stream for', matchId, '→', url.slice(0, 120) + '…');
+    } else {
+      console.warn('Match found but no stream URL (status: ' + item.status + ')', item);
+    }
+    return url;
+  } catch (e) {
+    console.error('JSON fetch/parse error:', e);
+    showStatus('Failed to load stream list');
+    return null;
+  }
+}
+
+function getMatchId(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id');
+}
+
+// ---------- Playback logic ----------
+function isNativeStream(streamUrl){
+  var u = streamUrl.toLowerCase();
+  return u.includes("fancode") || u.includes("sonydaime");
+}
+
+// ✅ State for native fallback recovery
+let currentStreamUrl = null;
+let nativeMode = false;
+let userPaused = false;
+let nativeRecoveryPending = false;
+
+async function playNativeWithShakaUI(streamUrl){
+  const video = document.getElementById('video');
+  if (!video) return;
+  video.removeAttribute('poster');
+
+  const ui = video.ui;
+  const controls = ui ? ui.getControls() : null;
+  const player = controls ? controls.getPlayer() : null;
+
+  // ✅ unload Shaka but don't destroy UI (keeps control DOM intact)
+  if (player) {
+    try { await player.unload(); } catch(e) { /* ignore */ }
   }
 
-  function triggerBlockScreen(title, message){
-    const container = document.getElementById("player-container");
-    const video = document.getElementById("video");
-    
-    try {
-      video.pause();
-      video.removeAttribute('src');
-      video.load();
-    } catch(e){}
+  video.muted = true;
+  video.playsInline = true;
+  video.src = streamUrl;
+  video.load();
 
-    const overlay = document.createElement("div");
-    overlay.className = "block-overlay";
-    overlay.innerHTML = `
-      <div class="block-box">
-        <div class="block-title">${title}</div>
-        <div class="block-sub">${message}</div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
-    container.style.display = 'none';
+  // ✅ persistent handler (not {once:true}) so we can ignore ad-tab switches
+  if (!nativeMode) {
+    video.addEventListener('error', onNativeError);
   }
+  nativeMode = true;
+  currentStreamUrl = streamUrl;
 
-  if(isSandboxedEnv()){
-    triggerBlockScreen('Disable Sandbox', 'Opening Chrome Browser Only & Disable Ad blocker');
+  try {
+    await video.play();
+    showStatus('');
+  } catch(e) {
+    console.log("Autoplay blocked completely.", e);
+    showStatus('Tap to play');
+  }
+}
+
+function onNativeError(){
+  // Ignore errors that happen while the page is hidden (ad redirect) or user paused
+  if (document.visibilityState === 'hidden') return;
+  if (userPaused) return;
+  const video = document.getElementById('video');
+  if (!video || !video.error) return;
+
+  console.warn('Native media error:', video.error.code, video.error.message);
+
+  // One auto-retry (handles the "returned from ad tab" transient failure)
+  if (currentStreamUrl && !nativeRecoveryPending) {
+    nativeRecoveryPending = true;
+    setTimeout(() => {
+      nativeRecoveryPending = false;
+      if (nativeMode && currentStreamUrl && !userPaused && document.visibilityState === 'visible') {
+        playNativeWithShakaUI(currentStreamUrl);
+      }
+    }, 1200);
+    return;
+  }
+  showStatus('Native playback failed');
+}
+
+async function initPlayer(){
+  if (!window.shaka || !shaka.Player || !shaka.Player.isBrowserSupported()) {
+    showStatus('Browser not supported');
     return;
   }
 
-  const CONFIG={
-    streamUrl:"https://jiotvmblive.cdn.jio.com/bpk-tv/Sony_HD_MOB/WDVLive/index.mpd",
-    keyId:"17baf7d2f243c3aa85f5203137aad6da",
-    key:"15d0fb6df895c4d18368f5058f207511",
-    cookieUrl:"https://allrounder2-0.pages.dev/api/Sony-3.json"
-  };
+  var matchId = getMatchId();
+  if (!matchId) {
+    showStatus('No match ID. Use ?id=4250387_ENG');
+    return;
+  }
 
-  document.addEventListener("DOMContentLoaded",async()=>{
+  var streamUrl = await fetchStreamUrlById(matchId);
+  if (!streamUrl) {
+    showStatus('Stream not found for ID: ' + matchId);
+    return;
+  }
 
-    shaka.polyfill.installAll();
-    if(!shaka.Player.isBrowserSupported()) return;
+  currentStreamUrl = streamUrl;
 
-    const video=document.getElementById("video");
-    const container=document.getElementById("player-container");
+  if (isNativeStream(streamUrl)) {
+    await playNativeWithShakaUI(streamUrl);
+    return;
+  }
 
-    video.muted=true;
+  nativeMode = false;
 
-    const player=new shaka.Player();
-    await player.attach(video);
+  shaka.polyfill.installAll();
+  const video = document.getElementById('video');
+  if (!video || !video.ui) { setTimeout(initPlayer, 80); return; }
 
-    const ui=new shaka.ui.Overlay(player,container,video);
+  const ui = video.ui;
+  const controls = ui.getControls();
+  const player = controls.getPlayer();
 
-    ui.configure({
-      addBigPlayButton: true,
-      controlPanelElements: [
-        "mute",
-        "play_pause",
-        "time_and_duration",
-        "spacer",
-        "quality",
-        "picture_in_picture",
-        "fullscreen"
-      ],
-      seekBarColors: {
-        base: "white",
-        buffered: "red", 
-        played: "green"
-      }
-    });
+  player.addEventListener('error', function(ev){ onPlayerError(ev.detail); });
+  controls.addEventListener('error', function(ev){ onPlayerError(ev.detail); });
 
-    player.configure({
-      drm:{clearKeys:{[CONFIG.keyId]:CONFIG.key}},
-      manifest:{defaultPresentationDelay:5},
-      streaming:{
-        lowLatencyMode:true,
-        bufferingGoal:10,
-        rebufferingGoal:2,
-        safeSeekOffset:5
-      }
-    });
-
-    let cookieValue="";
-
-    try{
-      const response=await fetch(CONFIG.cookieUrl,{cache:"no-store"});
-      const data=await response.json();
-      cookieValue=data.cookie||"";
-    }catch(e){}
-
-    if(cookieValue){
-      player.getNetworkingEngine().registerRequestFilter((type,request)=>{
-        request.headers["Referer"]="https://www.jiotv.com/";
-        request.headers["User-Agent"]="plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
-        request.headers["Cookie"]=cookieValue;
-
-        let urlCookie=cookieValue.startsWith("__hdnea__=")?cookieValue.substring(10):cookieValue;
-
-        if((type===shaka.net.NetworkingEngine.RequestType.MANIFEST||
-        type===shaka.net.NetworkingEngine.RequestType.SEGMENT)&&
-        !request.uris[0].includes("__hdnea__")){
-          const sep=request.uris[0].includes("?")?"&":"?";
-          request.uris[0]+=sep+"__hdnea__="+urlCookie;
-        }
-      });
-    }
-
-    try{
-      await player.load(CONFIG.streamUrl);
-      video.play().catch(()=>{});
-    }catch(e){}
-
-    video.addEventListener("play",()=>{
-      video.muted=false;
-    });
-
+  // ✅ Added addSeekBar so seek bar renders in the BOTTOM controls on mobile
+  ui.configure({
+    controlPanelElements:["play_pause","mute","volume","spacer","time_and_duration","quality","fullscreen","overflow_menu"],
+    addSeekBar: true
   });
 
-})();
-</script>
+  player.configure({
+    streaming:{bufferingGoal:20,rebufferingGoal:2,bufferBehind:20}
+  });
 
+  try{
+    await player.load(streamUrl);
+    showStatus('');
+    video.muted = true;
+    video.play().catch(function(){});
+  }catch(e){
+    onPlayerError(e);
+  }
+}
+
+function initFailed(){
+  showStatus('Unable to load Shaka UI');
+}
+
+document.addEventListener('shaka-ui-loaded', initPlayer);
+document.addEventListener('shaka-ui-load-failed', initFailed);
+
+// ✅ Track user pause so native error recovery doesn't fight the user
+document.getElementById('video').addEventListener('pause', function(){
+  if (document.visibilityState === 'visible' && !nativeRecoveryPending) {
+    userPaused = true;
+  }
+});
+document.getElementById('video').addEventListener('play', function(){
+  userPaused = false;
+});
+
+// ✅ When returning from ad tab, resume native playback
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState !== 'visible') return;
+  if (!nativeMode || !currentStreamUrl || userPaused) return;
+  const video = document.getElementById('video');
+  if (video && video.paused) {
+    video.play().catch(function(){});
+  }
+});
+
+if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(function(){});
+</script>
 </body>
 </html>
