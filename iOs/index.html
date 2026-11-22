@@ -1,15 +1,18 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <meta name="theme-color" content="#000000">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/controls.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/shaka-player.ui.min.js"></script><style type="text/css">* {user-select: auto !important; -webkit-user-select: auto !important;}</style><input type="hidden" id="inject_idm_text_selection">
+    <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/shaka-player.ui.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,25 +40,25 @@
 
 <body>
 
-    <main id="videoContainer" class="shaka-video-container shaka-mobile" data-shaka-player-container="" shaka-controls="true">
-        <video id="videoPlayer" class="shaka-video" playsinline="" webkit-playsinline="" x5-playsinline="" autoplay="" muted="" src="https://sonyeventsglobal.akamaized.net/hls/live/2119921/cricodi_2211/HIN/std_lrh-800300010.m3u8?hdnea=exp=1795402597~acl=/*~id=59219626045400876623631320874146~hmac=c4e880db6caddeee8602e9d753a6b809d73f38a1e334934a681baa7302c4a3b4"><source src="blob:https://sonucdn-v4.pages.dev/42f360f2-ea7c-490d-8ac6-6495062e9bbb" type=""></video>
+    <main id="videoContainer" class="shaka-video-container">
+        <video
+            id="videoPlayer"
+            class="shaka-video"
+            playsinline
+            webkit-playsinline
+            x5-playsinline
+            autoplay
+            muted
+        ></video>
 
-        <div id="statusOverlay" class="status-overlay" hidden="">LOADING STREAM...</div>
+        <div id="statusOverlay" class="status-overlay">LOADING STREAM...</div>
 
-        <button type="button" id="playOverlay" class="play-overlay" hidden="">
+        <button type="button" id="playOverlay" class="play-overlay" hidden>
             <span>▶ TAP TO PLAY</span>
         </button>
-    <div class="shaka-controls-container" shown="true"><div class="shaka-scrim-container"></div><div class="shaka-big-buttons-container"><button type="button" class="shaka-skip-previous-button shaka-tooltip shaka-no-propagation shaka-hidden" aria-label="Previous"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M220-280v-400q0-17 11.5-28.5T260-720q17 0 28.5 11.5T300-680v400q0 17-11.5 28.5T260-240q-17 0-28.5-11.5T220-280Zm458-1L430-447q-9-6-13.5-14.5T412-480q0-10 4.5-18.5T430-513l248-166q5-4 11-5t11-1q16 0 28 11t12 29v330q0 18-12 29t-28 11q-5 0-11-1t-11-5Z"></path></svg></button><button type="button" class="shaka-play-button shaka-tooltip shaka-no-propagation" aria-label="Pause"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M640-200q-33 0-56.5-23.5T560-280v-400q0-33 23.5-56.5T640-760q33 0 56.5 23.5T720-680v400q0 33-23.5 56.5T640-200Zm-320 0q-33 0-56.5-23.5T240-280v-400q0-33 23.5-56.5T320-760q33 0 56.5 23.5T400-680v400q0 33-23.5 56.5T320-200Z"></path></svg></button><button type="button" class="shaka-skip-next-button shaka-tooltip shaka-no-propagation shaka-hidden" aria-label="Next"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M660-280v-400q0-17 11.5-28.5T700-720q17 0 28.5 11.5T740-680v400q0 17-11.5 28.5T700-240q-17 0-28.5-11.5T660-280Zm-440-35v-330q0-18 12-29t28-11q5 0 11 1t11 5l248 166q9 6 13.5 14.5T548-480q0 10-4.5 18.5T530-447L282-281q-5 4-11 5t-11 1q-16 0-28-11t-12-29Z"></path></svg></button></div><div class="shaka-hidden-fast-forward-container"><div class="shaka-fast-forward-container"><span>0s</span><svg class="shaka-ui-icon shaka-forward-rewind-container-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M100-315v-330q0-18 12-29t28-11q5 0 11 1t11 5l248 166q9 6 13.5 14.5T428-480q0 10-4.5 18.5T410-447L162-281q-5 4-11 5t-11 1q-16 0-28-11t-12-29Zm400 0v-330q0-18 12-29t28-11q5 0 11 1t11 5l248 166q9 6 13.5 14.5T828-480q0 10-4.5 18.5T810-447L562-281q-5 4-11 5t-11 1q-16 0-28-11t-12-29Z"></path></svg></div></div><div class="shaka-hidden-rewind-container"><div class="shaka-rewind-container"><span>0s</span><svg class="shaka-ui-icon shaka-forward-rewind-container-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M798-281 550-447q-9-6-13.5-14.5T532-480q0-10 4.5-18.5T550-513l248-166q5-4 11-5t11-1q16 0 28 11t12 29v330q0 18-12 29t-28 11q-5 0-11-1t-11-5Zm-400 0L150-447q-9-6-13.5-14.5T132-480q0-10 4.5-18.5T150-513l248-166q5-4 11-5t11-1q16 0 28 11t12 29v330q0 18-12 29t-28 11q-5 0-11-1t-11-5Z"></path></svg></div></div><div class="shaka-top-controls shaka-no-propagation"><div class="shaka-controls-top-button-panel shaka-show-controls-on-mouse-over"><div class="shaka-content-title shaka-hidden"></div><div class="shaka-spacer" aria-hidden="true"></div></div></div><div class="shaka-bottom-controls shaka-no-propagation"><div class="shaka-ad-controls shaka-hidden"><div class="shaka-skip-ad-container"><div class="shaka-skip-ad-counter shaka-hidden"></div><button type="button" class="shaka-skip-ad-button shaka-hidden shaka-no-propagation" disabled="">Skip Ad</button></div></div><div class="shaka-range-container shaka-seek-bar-container shaka-hidden" style="background: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0.54) 0%, rgba(255, 255, 255, 0.54) 0%, rgba(255, 255, 255, 0.3) 0%);"><div class="shaka-chapter-markers"></div><div class="shaka-ad-markers" style="background: transparent;"></div><input class="shaka-range-element shaka-seek-bar shaka-no-propagation shaka-show-controls-on-mouse-over" type="range" step="any" min="0" max="0" aria-label="Seek"><div class="shaka-player-ui-thumbnail-container" style="visibility: hidden;"><div class="shaka-player-ui-thumbnail-image-container"><img class="shaka-player-ui-thumbnail-image" draggable="false"></div><div class="shaka-player-ui-thumbnail-time-container"><div class="shaka-player-ui-thumbnail-time"></div></div></div></div><div class="shaka-controls-button-panel shaka-show-controls-on-mouse-over"><button type="button" class="shaka-play-button shaka-tooltip shaka-no-propagation" aria-label="Pause"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M640-200q-33 0-56.5-23.5T560-280v-400q0-33 23.5-56.5T640-760q33 0 56.5 23.5T720-680v400q0 33-23.5 56.5T640-200Zm-320 0q-33 0-56.5-23.5T240-280v-400q0-33 23.5-56.5T320-760q33 0 56.5 23.5T400-680v400q0 33-23.5 56.5T320-200Z"></path></svg></button><button type="button" class="shaka-current-time" disabled="">Live</button><button type="button" class="shaka-ad-info" disabled=""></button><button type="button" class="shaka-mute-button shaka-tooltip shaka-no-propagation" aria-label="Unmute"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M671-177q-11 7-22 13t-23 11q-15 7-30.5 0T574-176q-6-15 1.5-29.5T598-227q4-2 7.5-4t7.5-4L480-368v111q0 27-24.5 37.5T412-228L280-360H160q-17 0-28.5-11.5T120-400v-160q0-17 11.5-28.5T160-600h88L84-764q-11-11-11-28t11-28q11-11 28-11t28 11l680 680q11 11 11 28t-11 28q-11 11-28 11t-28-11l-93-93Zm89-304q0-83-44-151.5T598-735q-15-7-22-21.5t-2-29.5q6-16 21.5-23t31.5 0q97 43 155 131t58 197q0 33-6 65.5T817-353q-8 22-24.5 27.5t-30.5.5q-14-5-22.5-18t-.5-30q11-26 16-52.5t5-55.5ZM591-623q33 21 51 63t18 80v10q0 5-1 10-2 13-14 17t-22-6l-51-51q-6-6-9-13.5t-3-15.5v-77q0-12 10.5-17.5t20.5.5Zm-201-59q-6-6-6-14t6-14l22-22q19-19 43.5-8.5T480-703v63q0 14-12 19t-22-5l-56-56Z"></path></svg><label class="shaka-overflow-button-label shaka-overflow-menu-only"><span>Unmute</span><span class="shaka-current-selection-span"></span></label></button><div class="shaka-range-container shaka-volume-bar-container shaka-volume-bar-container-allow-hiding" style="background: linear-gradient(to right, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0.54) 0%, rgba(255, 255, 255, 0.54) 100%);"><input class="shaka-range-element shaka-volume-bar" type="range" step="any" min="0" max="100" aria-label="Volume"></div><div class="shaka-spacer" aria-hidden="true"></div><button type="button" class="shaka-overflow-button shaka-language-button shaka-tooltip-status shaka-hidden" aria-label="Language" shaka-status=""><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-155.5t86-127Q252-817 325-848.5T480-880q83 0 155.5 31.5t127 86q54.5 54.5 86 127T880-480q0 82-31.5 155t-86 127.5q-54.5 54.5-127 86T480-80Zm0-82q26-36 45-75t31-83H404q12 44 31 83t45 75Zm-104-16q-18-33-31.5-68.5T322-320H204q29 50 72.5 87t99.5 55Zm208 0q56-18 99.5-55t72.5-87H638q-9 38-22.5 73.5T584-178ZM170-400h136q-3-20-4.5-39.5T300-480q0-21 1.5-40.5T306-560H170q-5 20-7.5 39.5T160-480q0 21 2.5 40.5T170-400Zm216 0h188q3-20 4.5-39.5T580-480q0-21-1.5-40.5T574-560H386q-3 20-4.5 39.5T380-480q0 21 1.5 40.5T386-400Zm268 0h136q5-20 7.5-39.5T800-480q0-21-2.5-40.5T790-560H654q3 20 4.5 39.5T660-480q0 21-1.5 40.5T654-400Zm-16-240h118q-29-50-72.5-87T584-782q18 33 31.5 68.5T638-640Zm-234 0h152q-12-44-31-83t-45-75q-26 36-45 75t-31 83Zm-200 0h118q9-38 22.5-73.5T376-782q-56 18-99.5 55T204-640Z"></path></svg><label class="shaka-overflow-button-label shaka-overflow-menu-only shaka-overflow-button-label-inline"><span>Language</span><span class="shaka-current-selection-span"></span></label></button><button type="button" class="shaka-overflow-button shaka-resolution-button shaka-tooltip-status shaka-hidden" shaka-status="Auto" aria-label="Resolution"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M480-120q-17 0-28.5-11.5T440-160v-160q0-17 11.5-28.5T480-360q17 0 28.5 11.5T520-320v40h280q17 0 28.5 11.5T840-240q0 17-11.5 28.5T800-200H520v40q0 17-11.5 28.5T480-120Zm-320-80q-17 0-28.5-11.5T120-240q0-17 11.5-28.5T160-280h160q17 0 28.5 11.5T360-240q0 17-11.5 28.5T320-200H160Zm160-160q-17 0-28.5-11.5T280-400v-40H160q-17 0-28.5-11.5T120-480q0-17 11.5-28.5T160-520h120v-40q0-17 11.5-28.5T320-600q17 0 28.5 11.5T360-560v160q0 17-11.5 28.5T320-360Zm160-80q-17 0-28.5-11.5T440-480q0-17 11.5-28.5T480-520h320q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440H480Zm160-160q-17 0-28.5-11.5T600-640v-160q0-17 11.5-28.5T640-840q17 0 28.5 11.5T680-800v40h120q17 0 28.5 11.5T840-720q0 17-11.5 28.5T800-680H680v40q0 17-11.5 28.5T640-600Zm-480-80q-17 0-28.5-11.5T120-720q0-17 11.5-28.5T160-760h320q17 0 28.5 11.5T520-720q0 17-11.5 28.5T480-680H160Z"></path></svg><label class="shaka-overflow-button-label shaka-overflow-menu-only shaka-overflow-button-label-inline"><span>Resolution</span><span><span class="shaka-current-selection-span">Auto</span><span class="shaka-current-auto-quality" style="display: none;"></span><sup class="shaka-current-quality-mark" style="display: none;"></sup></span></label><span class="shaka-overflow-playback-rate-mark" style="display: none;"></span></button><button type="button" class="shaka-pip-button shaka-tooltip shaka-no-propagation shaka-hidden" aria-label="Enter Picture-in-Picture"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M120-520q-17 0-28.5-11.5T80-560q0-17 11.5-28.5T120-600h104L80-743q-12-12-12-28.5T80-800q12-12 28.5-12t28.5 12l143 144v-104q0-17 11.5-28.5T320-800q17 0 28.5 11.5T360-760v200q0 17-11.5 28.5T320-520H120Zm40 360q-33 0-56.5-23.5T80-240v-160q0-17 11.5-28.5T120-440q17 0 28.5 11.5T160-400v160h280q17 0 28.5 11.5T480-200q0 17-11.5 28.5T440-160H160Zm680-280q-17 0-28.5-11.5T800-480v-240H480q-17 0-28.5-11.5T440-760q0-17 11.5-28.5T480-800h320q33 0 56.5 23.5T880-720v240q0 17-11.5 28.5T840-440ZM600-160q-17 0-28.5-11.5T560-200v-120q0-17 11.5-28.5T600-360h240q17 0 28.5 11.5T880-320v120q0 17-11.5 28.5T840-160H600Z"></path></svg><label class="shaka-overflow-button-label shaka-overflow-menu-only shaka-simple-overflow-button-label-inline"><span>Picture-in-Picture</span><span class="shaka-current-selection-span">Off</span></label></button><button type="button" class="shaka-fullscreen-button shaka-tooltip shaka-no-propagation" aria-label="Full screen"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M200-200h80q17 0 28.5 11.5T320-160q0 17-11.5 28.5T280-120H160q-17 0-28.5-11.5T120-160v-120q0-17 11.5-28.5T160-320q17 0 28.5 11.5T200-280v80Zm560 0v-80q0-17 11.5-28.5T800-320q17 0 28.5 11.5T840-280v120q0 17-11.5 28.5T800-120H680q-17 0-28.5-11.5T640-160q0-17 11.5-28.5T680-200h80ZM200-760v80q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680v-120q0-17 11.5-28.5T160-840h120q17 0 28.5 11.5T320-800q0 17-11.5 28.5T280-760h-80Zm560 0h-80q-17 0-28.5-11.5T640-800q0-17 11.5-28.5T680-840h120q17 0 28.5 11.5T840-800v120q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-80Z"></path></svg></button></div></div><div class="shaka-no-propagation shaka-show-controls-on-mouse-over shaka-settings-menu shaka-hidden shaka-audio-languages shaka-low-position" style="left: 15px; right: auto;"><button type="button" class="shaka-back-to-overflow-button" aria-label="Back"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"></path></svg><span>Language</span></button></div><div class="shaka-no-propagation shaka-show-controls-on-mouse-over shaka-settings-menu shaka-hidden shaka-resolutions shaka-low-position" style="left: 15px; right: auto;"><button type="button" class="shaka-back-to-overflow-button" aria-label="Resolution"><svg class="shaka-ui-icon" viewBox="0 -960 960 960" style="background-color: transparent;"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"></path></svg><span>Resolution</span></button><button type="button" class="shaka-enable-abr-button" aria-selected="true"><span class="shaka-chosen-item">Auto</span><svg class="shaka-ui-icon shaka-chosen-item" viewBox="0 -960 960 960" aria-hidden="true" style="background-color: transparent;"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"></path></svg></button></div></div><div class="shaka-client-side-ad-container shaka-hidden"></div><div class="shaka-server-side-ad-container shaka-hidden"></div><div class="shaka-spinner-container shaka-hidden"><div class="shaka-spinner"><svg focusable="false" stroke="currentColor" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" class="q-spinner text-grey-9">
-      <g transform="translate(1 1)" stroke-width="6" fill="none" fill-rule="evenodd">
-        <circle stroke-opacity=".5" cx="18" cy="18" r="16"></circle>
-        <path d="M34 18c0-9.94-8.06-16-16-16">
-          <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite">
-          </animateTransform>
-        </path>
-      </g>
-    </svg></div></div></main>
+    </main>
 
-<script>
+    <script>
         const STREAM_URL = "https://sonyeventsglobal.akamaized.net/hls/live/2119921/cricodi_2211/HIN/std_lrh-800300010.m3u8?hdnea=exp=1795402597~acl=/*~id=59219626045400876623631320874146~hmac=c4e880db6caddeee8602e9d753a6b809d73f38a1e334934a681baa7302c4a3b4";
 
         const videoElement = document.getElementById("videoPlayer");
@@ -177,14 +180,19 @@
             player?.destroy();
         });
     </script>
+<script>
+// alert('Join Our Telegram For More Live Links')
+         if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
+         window.open("https://t.me/+IhSW51QysxU3NzY1", '_blank');
+     }
+</script>
 
-
+</body>
     <script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+</html>
 
 
 
 
 
 
-
-</body></html>
