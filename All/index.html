@@ -1,317 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="referrer" content="no-referrer">
-<meta name="author" content="@Sony Hindi">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/controls.css" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/shaka-player.ui.js" crossorigin="anonymous"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:Arial,sans-serif;}
-.video-container{position:relative;width:100%;height:100%;background:#000;}
-#player-wrap{position:absolute;inset:0;}
-#video{display:block;width:100%;height:100%;object-fit:contain;background:#000;}
-.shaka-spinner-container,.shaka-buffering-spinner,.shaka-spinner{display:none!important;}
-#credit{position:fixed;top:14px;right:16px;z-index:10;color:rgba(255,255,255,.85);background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;pointer-events:none;user-select:none;}
-#status{position:fixed;left:14px;bottom:58px;z-index:20;color:#fff;background:rgba(15,15,15,.88);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;pointer-events:none;}
-#status:empty{display:none;}
-</style>
+    <meta charset="UTF-8">
+    <title>TG_@Cricinsider365</title>
+<script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Plyr + HLS.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.min.js" crossorigin="anonymous"></script>
+
+    <style>
+        /* Reset & Fullscreen */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .player-container {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plyr {
+            width: 100%;
+            height: 100%;
+        }
+
+        .plyr__video-wrapper {
+            height: 100%;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        /* Custom watermark */
+        .custom-watermark {
+            position: absolute;
+            z-index: 40;
+            pointer-events: none;
+            bottom: 80px;
+            right: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.10);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: #000;
+            color: #fff;
+            z-index: 2000;
+            font-size: 18px;
+            pointer-events: none;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, .15);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Plyr overrides for dark theme */
+        .plyr--video {
+            background: #000;
+        }
+        .plyr__controls {
+            background: rgba(0, 0, 0, 0.75) !important;
+            backdrop-filter: blur(8px);
+        }
+        .plyr__control--overlaid {
+            background: rgba(255, 59, 48, 0.9) !important;
+        }
+        .plyr__control--overlaid svg {
+            fill: #fff !important;
+        }
+        .plyr__progress__buffer {
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+        .plyr__progress__played {
+            background: #ff3b30 !important;
+        }
+        .plyr__menu__container {
+            background: rgba(20, 20, 20, 0.95) !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+        }
+        .plyr__menu__container .plyr__control--back {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .plyr__volume input[type="range"] {
+            background: rgba(255,255,255,0.2) !important;
+        }
+        .plyr__volume input[type="range"]::-webkit-slider-thumb {
+            background: #ff3b30 !important;
+        }
+        .plyr__volume input[type="range"]::-moz-range-thumb {
+            background: #ff3b30 !important;
+        }
+
+        @media (max-width: 700px) {
+            .custom-watermark {
+                font-size: 9px;
+                bottom: 70px;
+                right: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="video-container">
-  <div id="player-wrap" data-shaka-player-container>
-    <video id="video" autoplay playsinline preload="auto" data-shaka-player></video>
-  </div>
+
+<div class="player-container" id="playerContainer">
+    <video id="video" autoplay muted playsinline preload="metadata"></video>
+    <div class="custom-watermark">LIVE · FANCODE</div>
+
+    <!-- Loading overlay -->
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        Loading stream...
+    </div>
 </div>
-<div id="credit">@Cricinsider365</div>
-<div id="status"></div>
 
 <script>
-const STREAM_URL = "https://sonyeventsglobal.akamaized.net/hls/live/2119921/cricodi_2611/HIN/master.m3u8?hdnea=exp=1795727200~acl=/*~id=97593208092865494943266882360490~hmac=992f6268dcdbb8b03285e752bf39b0bf40f8effb5645850379d2887d9ed7a6bf";
+    (function() {
+        'use strict';
 
-const video = document.getElementById("video");
-const statusEl = document.getElementById("status");
+        /* ========== CONFIG ========== */
+        const STREAM_URL =
+            "https://jute-chappal.lovable.app/api/public/hls?url=https://jo-isp-sa-block-kare-uski-maa-ki-xhud.pages.dev/sliv/ten3hd.m3u8";
 
-let player = null;
-let usingNative = false;
-let fallbackDone = false;
-let reconnecting = false;
-let reconnectAttempts = 0;
-let nativeRetryUsed = false;
-let resumePosition = null;
-let lastPosition = 0;
-let initStarted = false;
+        const DOM = {
+            video: document.getElementById('video'),
+            container: document.getElementById('playerContainer'),
+            loading: document.getElementById('loading'),
+        };
 
-function showStatus(message, clickable = false) {
-  statusEl.textContent = message;
-  statusEl.style.pointerEvents = clickable ? "auto" : "none";
-}
+        let hlsInstance = null;
+        let plyrInstance = null;
+        let userPaused = false;
+        let isInitialized = false;
 
-function currentPosition() {
-  const value = Number(video.currentTime);
-  return Number.isFinite(value) && value >= 0 ? value : null;
-}
+        /* ========== HELPERS ========== */
+        function hideLoading() {
+            if (DOM.loading) DOM.loading.style.display = 'none';
+        }
 
-function positionForReload() {
-  if (resumePosition !== null) return resumePosition;
-  if (lastPosition > 0) return lastPosition;
-  const current = currentPosition();
-  return current !== null && current > 0 ? current : null;
-}
+        function showLoading() {
+            if (DOM.loading) DOM.loading.style.display = 'flex';
+        }
 
-video.addEventListener("timeupdate", () => {
-  if (!video.paused) {
-    const value = currentPosition();
-    if (value !== null) lastPosition = value;
-  }
-});
+        function destroyPlayer() {
+            if (hlsInstance) {
+                try { hlsInstance.destroy(); } catch (_) {}
+                hlsInstance = null;
+            }
+            if (plyrInstance) {
+                try { plyrInstance.destroy(); } catch (_) {}
+                plyrInstance = null;
+            }
+        }
 
-video.addEventListener("pause", () => {
-  if (!video.ended) {
-    const value = currentPosition();
-    if (value !== null && value > 0) {
-      resumePosition = value;
-      lastPosition = value;
-    }
-  }
-});
+        /* ========== PAUSE/RESUME LOGIC (from original) ========== */
+        function setupPauseResumeLogic(video) {
+            // Reset userPaused flag on play
+            video.addEventListener('play', function() {
+                userPaused = false;
+            });
 
-video.addEventListener("seeked", () => {
-  const value = currentPosition();
-  if (value !== null) {
-    lastPosition = value;
-    if (video.paused) resumePosition = value;
-  }
-});
+            // Detect user-initiated pause via click on play/pause button
+            document.addEventListener('click', function(e) {
+                const pauseBtn = e.target.closest('.plyr__control--pressed') || 
+                                e.target.closest('.plyr__control[data-plyr="play"]');
+                if (pauseBtn) {
+                    if (!video.paused) {
+                        userPaused = true;
+                    } else {
+                        userPaused = false;
+                    }
+                }
+            });
 
-function getSeekRange() {
-  if (!usingNative && player) {
-    try {
-      const range = player.seekRange();
-      if (range && Number.isFinite(range.start) && Number.isFinite(range.end) && range.end > range.start) {
-        return range;
-      }
-    } catch (e) {}
-  }
+            // Handle automatic pauses (buffering, etc.)
+            video.addEventListener('pause', function() {
+                if (!video.ended && !userPaused && isInitialized) {
+                    // Auto-resume after a short delay
+                    setTimeout(() => {
+                        if (video.paused && !video.ended && !userPaused) {
+                            video.play().catch(() => {});
+                        }
+                    }, 500);
+                }
+                // Reset flag after pause event
+                setTimeout(() => {
+                    userPaused = false;
+                }, 100);
+            });
 
-  try {
-    const ranges = video.seekable;
-    if (ranges && ranges.length) {
-      const last = ranges.length - 1;
-      return { start: ranges.start(last), end: ranges.end(last) };
-    }
-  } catch (e) {}
+            // Periodic check: if video is stuck paused, resume
+            setInterval(() => {
+                if (video.paused && !video.ended && !userPaused && isInitialized) {
+                    video.play().catch(() => {});
+                }
+            }, 3000);
+        }
 
-  if (Number.isFinite(video.duration) && video.duration > 0) {
-    return { start: 0, end: video.duration };
-  }
-  return null;
-}
-function restoreSavedPosition() {
-  if (resumePosition === null) return;
+        /* ========== INIT PLAYER ========== */
+        async function initPlayer() {
+            const video = DOM.video;
+            const container = DOM.container;
 
-  const target = resumePosition;
-  const range = getSeekRange();
-  if (!range) return;
+            showLoading();
+            destroyPlayer();
 
-  if (target < range.start - 0.5) {
-    resumePosition = null;
-    showStatus("Paused point is no longer available in this live stream");
-    return;
-  }
+            try {
+                // --- Try HLS.js first ---
+                if (Hls.isSupported()) {
+                    const hls = new Hls({
+                        maxMaxBufferLength: 100,
+                        liveSyncDurationCount: 3,
+                        liveMaxLatencyDurationCount: 6,
+                        enableWorker: true,
+                        xhrSetup: (xhr) => { xhr.withCredentials = false; }
+                    });
 
-  const safeEnd = Math.max(range.start, range.end - 0.15);
-  const safeTarget = Math.min(Math.max(target, range.start), safeEnd);
+                    hlsInstance = hls;
+                    hls.loadSource(STREAM_URL);
+                    hls.attachMedia(video);
 
-  try {
-    if (Math.abs(video.currentTime - safeTarget) > 0.35) {
-      video.currentTime = safeTarget;
-    }
-    resumePosition = null;
-    lastPosition = safeTarget;
-  } catch (e) {
-    // Keep resumePosition; another media event will retry the seek.
-  }
-}
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        // Get quality levels
+                        const levels = hls.levels
+                            .map(l => l.height)
+                            .filter(Boolean)
+                            .sort((a, b) => a - b);
 
-video.addEventListener("play", () => {
-  restoreSavedPosition();
-  if (resumePosition !== null) requestAnimationFrame(restoreSavedPosition);
-});
-video.addEventListener("loadedmetadata", restoreSavedPosition);
-video.addEventListener("canplay", restoreSavedPosition);
-video.addEventListener("progress", restoreSavedPosition);
-video.addEventListener("playing", () => showStatus(""));
+                        // Init Plyr
+                        plyrInstance = new Plyr(video, {
+                            controls: [
+                                'play-large', 'play', 'progress', 'current-time',
+                                'mute', 'volume', 'settings', 'fullscreen'
+                            ],
+                            settings: ['quality'],
+                            quality: {
+                                default: levels[levels.length - 1] || 720,
+                                options: levels.length ? levels : [360, 480, 720, 1080],
+                                forced: true,
+                                onChange: (newQuality) => {
+                                    hls.levels.forEach((level, index) => {
+                                        if (level.height === newQuality) hls.currentLevel = index;
+                                    });
+                                }
+                            }
+                        });
 
-statusEl.addEventListener("click", async () => {
-  try {
-    if (video.muted) {
-      video.muted = false;
-      video.volume = 1;
-    }
-    if (video.paused) await video.play();
-    showStatus("");
-  } catch (e) {
-    showStatus("Tap to play", true);
-  }
-});
+                        // ========== KEY CHANGE: Start with pause but unmuted ==========
+                        // First ensure video is unmuted
+                        video.muted = false;
 
-async function startWithAudioFallback() {
-  try {
-    video.muted = false;
-    video.volume = 1;
-    await video.play();
-    showStatus("");
-  } catch (e) {
-    try {
-      video.muted = true;
-      await video.play();
-      showStatus("Tap to unmute", true);
-    } catch (e2) {
-      showStatus("Tap to play", true);
-    }
-  }
-}
+                        // Load the stream but don't autoplay - keep it paused
+                        // The video will be paused initially with the big play button visible
+                        // We need to make sure it stays paused after loading
+                        video.pause();
 
-async function runNativeFallback(url) {
-  if (fallbackDone) return;
-  fallbackDone = true;
-  usingNative = true;
+                        // Mark as initialized so the auto-resume logic doesn't kick in
+                        isInitialized = true;
 
-  const saved = positionForReload();
-  if (saved !== null) resumePosition = saved;
+                        // Hide loading once stream is ready
+                        video.addEventListener('loadeddata', hideLoading);
+                        setTimeout(hideLoading, 3000);
 
-  if (player) {
-    try { await player.unload(); } catch (e) {}
-  }
+                        // Setup pause/resume logic
+                        setupPauseResumeLogic(video);
 
-  video.src = url;
-  video.load();
-  await startWithAudioFallback();
-}
-video.addEventListener("error", () => {
-  if (!usingNative || !fallbackDone) return;
-  if (!nativeRetryUsed) {
-    nativeRetryUsed = true;
-    const saved = positionForReload();
-    if (saved !== null) resumePosition = saved;
-    showStatus("Reconnecting...");
-    setTimeout(async () => {
-      video.src = STREAM_URL;
-      video.load();
-      await startWithAudioFallback();
-    }, 1200);
-  } else {
-    showStatus("Stream offline");
-  }
-});
+                        // Also handle quality changes via Plyr settings
+                        plyrInstance.on('qualitychange', (quality) => {
+                            // quality is already handled by the onChange above
+                        });
+                    });
 
-async function reconnectShaka() {
-  if (reconnecting || fallbackDone) return;
-  if (reconnectAttempts >= 1) {
-    await runNativeFallback(STREAM_URL);
-    return;
-  }
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                                hls.startLoad();
+                            } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                                hls.recoverMediaError();
+                            } else {
+                                console.warn('Fatal HLS error:', data);
+                                // Try fallback
+                                fallbackToNative(video);
+                            }
+                        }
+                    });
 
-  reconnecting = true;
-  reconnectAttempts++;
-  showStatus("Reconnecting...");
+                } else {
+                    // --- Fallback to native HLS (Safari) ---
+                    fallbackToNative(video);
+                }
 
-  const saved = positionForReload();
-  if (saved !== null) resumePosition = saved;
+            } catch (err) {
+                console.error('Init error:', err);
+                fallbackToNative(video);
+            }
+        }
 
-  try {
-    await player.load(STREAM_URL, saved);
-    await startWithAudioFallback();
-  } catch (e) {
-    await runNativeFallback(STREAM_URL);
-  } finally {
-    reconnecting = false;
-  }
-}
+        /* ========== FALLBACK: Native HLS ========== */
+        function fallbackToNative(video) {
+            console.log('Using native HLS fallback');
+            destroyPlayer();
 
-async function initPlayer() {
-  if (initStarted) return;
-  if (!STREAM_URL || STREAM_URL === "PASTE_YOUR_STREAM_LINK_HERE") {
-    showStatus("Add your stream link in STREAM_URL");
-    return;
-  }
+            video.src = STREAM_URL;
 
-  if (!window.shaka || !shaka.Player) {
-    await runNativeFallback(STREAM_URL);
-    return;
-  }
+            // ========== KEY CHANGE: Start with pause but unmuted ==========
+            video.muted = false;
 
-  shaka.polyfill.installAll();
-  if (!shaka.Player.isBrowserSupported()) {
-    await runNativeFallback(STREAM_URL);
-    return;
-  }
+            // Init Plyr without quality settings
+            plyrInstance = new Plyr(video, {
+                controls: [
+                    'play-large', 'play', 'progress', 'current-time',
+                    'mute', 'volume', 'settings', 'fullscreen'
+                ]
+            });
 
-  if (!video.ui) {
-    setTimeout(initPlayer, 60);
-    return;
-  }
+            // Keep it paused initially
+            video.pause();
 
-  initStarted = true;
-  const ui = video.ui;
-  const controls = ui.getControls();
-  player = controls.getPlayer();
+            // Mark as initialized
+            isInitialized = true;
 
-  ui.configure({
-    addSeekBar: true,
-    controlPanelElements: ["play_pause", "mute", "volume", "spacer", "quality", "fullscreen"],
-    overflowMenuButtons: ["quality", "playback_rate"]
-  });
+            video.addEventListener('loadeddata', hideLoading);
+            setTimeout(hideLoading, 3000);
 
-  player.configure({
-    streaming: {
-      bufferingGoal: 25,
-      rebufferingGoal: 2,
-      bufferBehind: 45,
-      retryParameters: {
-        maxAttempts: 4,
-        baseDelay: 800,
-        backoffFactor: 1.5
-      }
-    },
-    abr: {
-      enabled: true,
-      switchInterval: 5,
-      bandwidthDowngradeTarget: 0.85,
-      bandwidthUpgradeTarget: 0.75,
-      droppedFrames: true
-    }
-  });
+            setupPauseResumeLogic(video);
+        }
 
-  player.addEventListener("error", reconnectShaka);
+        /* ========== START ========== */
+        document.addEventListener('DOMContentLoaded', () => {
+            initPlayer();
+        });
 
-  try {
-    await player.load(STREAM_URL);
-    await startWithAudioFallback();
-  } catch (e) {
-    await runNativeFallback(STREAM_URL);
-  }
-}
+        // Handle visibility change to resume if needed
+        document.addEventListener('visibilitychange', () => {
+            const video = DOM.video;
+            if (!document.hidden && video && video.paused && !video.ended && isInitialized) {
+                video.play().catch(() => {});
+            }
+        });
 
-document.addEventListener("shaka-ui-loaded", initPlayer, { once: true });
-document.addEventListener("shaka-ui-load-failed", () => {
-  if (STREAM_URL && STREAM_URL !== "PASTE_YOUR_STREAM_LINK_HERE") {
-    runNativeFallback(STREAM_URL);
-  }
-}, { once: true });
-if ("wakeLock" in navigator) {
-  navigator.wakeLock.request("screen").catch(() => {});
-}
+    })();
 </script>
 <script>
 // alert('Join Our Telegram For More Live Links')
-         if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
-         window.open("https://t.me/+IhSW51QysxU3NzY1", '_blank');
-     }
+         if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
+         window.open("https://t.me/+IhSW51QysxU3NzY1", '_blank');
+     }
 </script>
-<script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 </body>
-  </html>
+</html>
