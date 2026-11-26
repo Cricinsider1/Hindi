@@ -1,185 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer">
-    <meta name="theme-color" content="#000000">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/controls.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/shaka-player.ui.min.js"></script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; height: 100%; background: #000; font-family: 'Sora', sans-serif; overflow: hidden; }
-        .shaka-video-container { position: relative; width: 100%; height: 100%; }
-        .shaka-video { width: 100%; height: 100%; }
-        .play-overlay {
-            position: absolute; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center;
-            background: rgba(0, 0, 0, 0.65); cursor: pointer; border: none; width: 100%; height: 100%;
-            color: #fff; font-family: inherit;
-        }
-        .play-overlay[hidden] { display: none; }
-        .play-overlay span {
-            font-size: 15px; font-weight: 800; letter-spacing: 1px; padding: 14px 30px;
-            border-radius: 999px; background: #fff; color: #000;
-        }
-        .status-overlay {
-            position: absolute; inset: 0; z-index: 1999; display: flex; align-items: center; justify-content: center;
-            background: rgba(0, 0, 0, 0.85); color: #fff; font-family: inherit; font-size: 14px; font-weight: 600;
-            letter-spacing: 1px; text-align: center; padding: 20px;
-        }
-        .status-overlay[hidden] { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<meta name="author" content="@Sony Hindi">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/controls.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/shaka-player.ui.js" crossorigin="anonymous"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:Arial,sans-serif;}
+.video-container{position:relative;width:100%;height:100%;background:#000;}
+#player-wrap{position:absolute;inset:0;}
+#video{display:block;width:100%;height:100%;object-fit:contain;background:#000;}
+.shaka-spinner-container,.shaka-buffering-spinner,.shaka-spinner{display:none!important;}
+#credit{position:fixed;top:14px;right:16px;z-index:10;color:rgba(255,255,255,.85);background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;pointer-events:none;user-select:none;}
+#status{position:fixed;left:14px;bottom:58px;z-index:20;color:#fff;background:rgba(15,15,15,.88);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;pointer-events:none;}
+#status:empty{display:none;}
+</style>
 </head>
-
 <body>
+<div class="video-container">
+  <div id="player-wrap" data-shaka-player-container>
+    <video id="video" autoplay playsinline preload="auto" data-shaka-player></video>
+  </div>
+</div>
+<div id="credit">@Cricinsider365</div>
+<div id="status"></div>
 
-    <main id="videoContainer" class="shaka-video-container">
-        <video
-            id="videoPlayer"
-            class="shaka-video"
-            playsinline
-            webkit-playsinline
-            x5-playsinline
-            autoplay
-            muted
-        ></video>
+<script>
+const STREAM_URL = "https://liveakdai-p.slivcdn.com/hls/live/2119921/cricodi_2611/HIN/master.m3u8?hdnea=exp=1795723373~acl=/*~id=36902358219482295013181823025778~hmac=d91de0c30ca79c10d9791b801448ff51564e2de737295222a53736a58e26f915";
 
-        <div id="statusOverlay" class="status-overlay">LOADING STREAM...</div>
+const video = document.getElementById("video");
+const statusEl = document.getElementById("status");
 
-        <button type="button" id="playOverlay" class="play-overlay" hidden>
-            <span>▶ TAP TO PLAY</span>
-        </button>
-    </main>
+let player = null;
+let usingNative = false;
+let fallbackDone = false;
+let reconnecting = false;
+let reconnectAttempts = 0;
+let nativeRetryUsed = false;
+let resumePosition = null;
+let lastPosition = 0;
+let initStarted = false;
 
-    <script>
-        const STREAM_URL = "https://liveakdai-p.slivcdn.com/hls/live/2119921/cricodi_2611/HIN/master.m3u8?hdnea=exp=1795723373~acl=/*~id=36902358219482295013181823025778~hmac=d91de0c30ca79c10d9791b801448ff51564e2de737295222a53736a58e26f915";
+function showStatus(message, clickable = false) {
+  statusEl.textContent = message;
+  statusEl.style.pointerEvents = clickable ? "auto" : "none";
+}
 
-        const videoElement = document.getElementById("videoPlayer");
-        const videoContainer = document.getElementById("videoContainer");
-        const playOverlay = document.getElementById("playOverlay");
-        const statusOverlay = document.getElementById("statusOverlay");
+function currentPosition() {
+  const value = Number(video.currentTime);
+  return Number.isFinite(value) && value >= 0 ? value : null;
+}
 
-        let player;
+function positionForReload() {
+  if (resumePosition !== null) return resumePosition;
+  if (lastPosition > 0) return lastPosition;
+  const current = currentPosition();
+  return current !== null && current > 0 ? current : null;
+}
 
-        function showPlayOverlay() { playOverlay.hidden = false; }
-        function hidePlayOverlay() { playOverlay.hidden = true; }
-        function showStatus(text) { statusOverlay.textContent = text; statusOverlay.hidden = false; }
-        function hideStatus() { statusOverlay.hidden = true; }
+video.addEventListener("timeupdate", () => {
+  if (!video.paused) {
+    const value = currentPosition();
+    if (value !== null) lastPosition = value;
+  }
+});
 
-        async function safePlay() {
-            try {
-                await videoElement.play();
-                hidePlayOverlay();
-            } catch (error) {
-                showPlayOverlay();
-            }
-        }
+video.addEventListener("pause", () => {
+  if (!video.ended) {
+    const value = currentPosition();
+    if (value !== null && value > 0) {
+      resumePosition = value;
+      lastPosition = value;
+    }
+  }
+});
 
-        playOverlay.addEventListener("click", async () => {
-            hidePlayOverlay();
-            try { await videoElement.play(); } catch (error) { showPlayOverlay(); }
-        });
+video.addEventListener("seeked", () => {
+  const value = currentPosition();
+  if (value !== null) {
+    lastPosition = value;
+    if (video.paused) resumePosition = value;
+  }
+});
 
-        videoElement.addEventListener("playing", () => {
-            hidePlayOverlay();
-            hideStatus();
-        });
+function getSeekRange() {
+  if (!usingNative && player) {
+    try {
+      const range = player.seekRange();
+      if (range && Number.isFinite(range.start) && Number.isFinite(range.end) && range.end > range.start) {
+        return range;
+      }
+    } catch (e) {}
+  }
 
-        function extractToken(streamUrl) {
-            const match = streamUrl.match(/[?&](hdnea|hdnts|__hdnea__)=([^&]+)/);
-            if (!match) return null;
-            return { name: match[1], value: match[2] };
-        }
+  try {
+    const ranges = video.seekable;
+    if (ranges && ranges.length) {
+      const last = ranges.length - 1;
+      return { start: ranges.start(last), end: ranges.end(last) };
+    }
+  } catch (e) {}
 
-        function applyAkamaiToken(streamUrl) {
-            const token = extractToken(streamUrl);
-            if (!token) return;
+  if (Number.isFinite(video.duration) && video.duration > 0) {
+    return { start: 0, end: video.duration };
+  }
+  return null;
+}
+function restoreSavedPosition() {
+  if (resumePosition === null) return;
 
-            const networkingEngine = player.getNetworkingEngine();
-            if (!networkingEngine) return;
+  const target = resumePosition;
+  const range = getSeekRange();
+  if (!range) return;
 
-            networkingEngine.registerRequestFilter((type, request) => {
-                const uri = request.uris && request.uris[0];
-                if (!uri) return;
-                if (uri.includes(token.name + "=")) return;
-                request.uris[0] = uri + (uri.includes("?") ? "&" : "?") + token.name + "=" + token.value;
-            });
-        }
+  if (target < range.start - 0.5) {
+    resumePosition = null;
+    showStatus("Paused point is no longer available in this live stream");
+    return;
+  }
 
-        async function loadShakaStream(streamUrl) {
-            videoElement.removeAttribute("src");
-            videoElement.load();
-            await player.unload();
-            player.getNetworkingEngine()?.clearAllRequestFilters();
-            applyAkamaiToken(streamUrl);
-            await player.load(streamUrl);
-            await safePlay();
-        }
+  const safeEnd = Math.max(range.start, range.end - 0.15);
+  const safeTarget = Math.min(Math.max(target, range.start), safeEnd);
 
-        async function loadNativeStream(streamUrl) {
-            await player.unload();
-            player.getNetworkingEngine()?.clearAllRequestFilters();
-            videoElement.removeAttribute("src");
-            videoElement.src = streamUrl;
-            videoElement.load();
-            await safePlay();
-        }
+  try {
+    if (Math.abs(video.currentTime - safeTarget) > 0.35) {
+      video.currentTime = safeTarget;
+    }
+    resumePosition = null;
+    lastPosition = safeTarget;
+  } catch (e) {
+    // Keep resumePosition; another media event will retry the seek.
+  }
+}
 
-        async function loadStream() {
-            const streamUrl = String(STREAM_URL || "").trim();
+video.addEventListener("play", () => {
+  restoreSavedPosition();
+  if (resumePosition !== null) requestAnimationFrame(restoreSavedPosition);
+});
+video.addEventListener("loadedmetadata", restoreSavedPosition);
+video.addEventListener("canplay", restoreSavedPosition);
+video.addEventListener("progress", restoreSavedPosition);
+video.addEventListener("playing", () => showStatus(""));
 
-            if (!streamUrl) {
-                showStatus("NO STREAM LINK PROVIDED");
-                return;
-            }
+statusEl.addEventListener("click", async () => {
+  try {
+    if (video.muted) {
+      video.muted = false;
+      video.volume = 1;
+    }
+    if (video.paused) await video.play();
+    showStatus("");
+  } catch (e) {
+    showStatus("Tap to play", true);
+  }
+});
 
-            showStatus("LOADING STREAM...");
+async function startWithAudioFallback() {
+  try {
+    video.muted = false;
+    video.volume = 1;
+    await video.play();
+    showStatus("");
+  } catch (e) {
+    try {
+      video.muted = true;
+      await video.play();
+      showStatus("Tap to unmute", true);
+    } catch (e2) {
+      showStatus("Tap to play", true);
+    }
+  }
+}
 
-            try {
-                await loadShakaStream(streamUrl);
-            } catch (error) {
-                try {
-                    await loadNativeStream(streamUrl);
-                } catch (fallbackError) {
-                    showStatus("STREAM FAILED TO LOAD");
-                }
-            }
-        }
+async function runNativeFallback(url) {
+  if (fallbackDone) return;
+  fallbackDone = true;
+  usingNative = true;
 
-        async function initPlayer() {
-            shaka.polyfill.installAll();
+  const saved = positionForReload();
+  if (saved !== null) resumePosition = saved;
 
-            player = new shaka.Player();
-            await player.attach(videoElement);
+  if (player) {
+    try { await player.unload(); } catch (e) {}
+  }
 
-            const ui = new shaka.ui.Overlay(player, videoContainer, videoElement);
-            ui.configure({
-                controlPanelElements: [
-                    "play_pause", "time_and_duration", "mute", "volume", "spacer",
-                    "language", "quality", "picture_in_picture", "fullscreen"
-                ]
-            });
+  video.src = url;
+  video.load();
+  await startWithAudioFallback();
+}
+video.addEventListener("error", () => {
+  if (!usingNative || !fallbackDone) return;
+  if (!nativeRetryUsed) {
+    nativeRetryUsed = true;
+    const saved = positionForReload();
+    if (saved !== null) resumePosition = saved;
+    showStatus("Reconnecting...");
+    setTimeout(async () => {
+      video.src = STREAM_URL;
+      video.load();
+      await startWithAudioFallback();
+    }, 1200);
+  } else {
+    showStatus("Stream offline");
+  }
+});
 
-            return true;
-        }
+async function reconnectShaka() {
+  if (reconnecting || fallbackDone) return;
+  if (reconnectAttempts >= 1) {
+    await runNativeFallback(STREAM_URL);
+    return;
+  }
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            if (await initPlayer()) {
-                await loadStream();
-            }
-        });
+  reconnecting = true;
+  reconnectAttempts++;
+  showStatus("Reconnecting...");
 
-        window.addEventListener("beforeunload", () => {
-            player?.destroy();
-        });
-    </script>
+  const saved = positionForReload();
+  if (saved !== null) resumePosition = saved;
+
+  try {
+    await player.load(STREAM_URL, saved);
+    await startWithAudioFallback();
+  } catch (e) {
+    await runNativeFallback(STREAM_URL);
+  } finally {
+    reconnecting = false;
+  }
+}
+
+async function initPlayer() {
+  if (initStarted) return;
+  if (!STREAM_URL || STREAM_URL === "PASTE_YOUR_STREAM_LINK_HERE") {
+    showStatus("Add your stream link in STREAM_URL");
+    return;
+  }
+
+  if (!window.shaka || !shaka.Player) {
+    await runNativeFallback(STREAM_URL);
+    return;
+  }
+
+  shaka.polyfill.installAll();
+  if (!shaka.Player.isBrowserSupported()) {
+    await runNativeFallback(STREAM_URL);
+    return;
+  }
+
+  if (!video.ui) {
+    setTimeout(initPlayer, 60);
+    return;
+  }
+
+  initStarted = true;
+  const ui = video.ui;
+  const controls = ui.getControls();
+  player = controls.getPlayer();
+
+  ui.configure({
+    addSeekBar: true,
+    controlPanelElements: ["play_pause", "mute", "volume", "spacer", "quality", "fullscreen"],
+    overflowMenuButtons: ["quality", "playback_rate"]
+  });
+
+  player.configure({
+    streaming: {
+      bufferingGoal: 25,
+      rebufferingGoal: 2,
+      bufferBehind: 45,
+      retryParameters: {
+        maxAttempts: 4,
+        baseDelay: 800,
+        backoffFactor: 1.5
+      }
+    },
+    abr: {
+      enabled: true,
+      switchInterval: 5,
+      bandwidthDowngradeTarget: 0.85,
+      bandwidthUpgradeTarget: 0.75,
+      droppedFrames: true
+    }
+  });
+
+  player.addEventListener("error", reconnectShaka);
+
+  try {
+    await player.load(STREAM_URL);
+    await startWithAudioFallback();
+  } catch (e) {
+    await runNativeFallback(STREAM_URL);
+  }
+}
+
+document.addEventListener("shaka-ui-loaded", initPlayer, { once: true });
+document.addEventListener("shaka-ui-load-failed", () => {
+  if (STREAM_URL && STREAM_URL !== "PASTE_YOUR_STREAM_LINK_HERE") {
+    runNativeFallback(STREAM_URL);
+  }
+}, { once: true });
+if ("wakeLock" in navigator) {
+  navigator.wakeLock.request("screen").catch(() => {});
+}
+</script>
 <script>
 // alert('Join Our Telegram For More Live Links')
          if (confirm("Join Our Telegram Channel @Cricinsider365") == true) {
@@ -187,6 +313,5 @@
      }
 </script>
 <script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
 </body>
-</html>
+  </html>
